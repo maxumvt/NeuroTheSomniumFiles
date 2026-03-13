@@ -5,9 +5,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // if using TextMeshProUGUI
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+
 [BepInPlugin("com.yourname.dialoglogger", "NeuroSomniumFiles", "1.0.0")]
 public class TextExtractor : BaseUnityPlugin
 {
+    private NeuroSender sender;
+
     float searchTimer = 0f;
     bool searchAllowed = true;
 
@@ -28,6 +36,8 @@ public class TextExtractor : BaseUnityPlugin
     void Awake()
     {
         Logger.LogInfo("NeuroSomniumFiles started");
+        sender = new NeuroSender();
+        sender.Connect();
     }
 
     void Update()
@@ -177,5 +187,7 @@ public class TextExtractor : BaseUnityPlugin
     void EmitTextChange(string text)
     {
         Logger.LogInfo(text);
+        string json = "{\"text\": \"" + text.Replace("\"", "\\\"") + "\"}";
+        sender.SendString(json);
     }
 }

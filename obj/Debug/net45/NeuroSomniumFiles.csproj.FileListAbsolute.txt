@@ -1,0 +1,16 @@
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\NeuroSomniumFiles.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\NeuroSomniumFiles.pdb
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\BepInEx.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\TMPro.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\UnityEngine.CoreModule.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\UnityEngine.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net45\UnityEngine.UI.dll
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.csproj.AssemblyReference.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.GeneratedMSBuildEditorConfig.editorconfig
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.AssemblyInfoInputs.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.AssemblyInfo.cs
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.csproj.CoreCompileInputs.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.sourcelink.json
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSom.23EFD9C7.Up2Date
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.dll
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net45\NeuroSomniumFiles.pdb
