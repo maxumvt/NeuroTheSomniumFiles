@@ -156,6 +156,8 @@ public class ObservationProvider
         currentTerm = termText ?? "";
         ContextMessage cMsg = new ContextMessage($"Looking at {currentTerm}", false);
         OnTermChange?.Invoke(cMsg.ToJson());
+        
+        CurrentOptions["look_at_term"] = $"Look at {currentTerm}";
 
 
         bool buttonUp = lookChoices.transform.Find("SelectU").gameObject.activeSelf;
@@ -169,21 +171,21 @@ public class ObservationProvider
         if (buttonDown)
         {
             string buttonDownText = lookChoices.transform.Find("SelectD/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
-            CurrentOptions["button_up"] = buttonDownText;
+            CurrentOptions["button_down"] = buttonDownText;
         }
 
         bool buttonLeft = lookChoices.transform.Find("SelectL").gameObject.activeSelf;
         if (buttonLeft)
         {
             string buttonLeftText = lookChoices.transform.Find("SelectL/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
-            CurrentOptions["button_up"] = buttonLeftText;
+            CurrentOptions["button_left"] = buttonLeftText;
         }
 
         bool buttonRight = lookChoices.transform.Find("SelectR").gameObject.activeSelf;
         if (buttonRight)
         {
             string buttonRightText = lookChoices.transform.Find("SelectR/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
-            CurrentOptions["button_up"] = buttonRightText;
+            CurrentOptions["button_right"] = buttonRightText;
         }
 
         bool buttonZoom = lookChoices.transform.Find("Zoom").gameObject.activeSelf;
@@ -377,7 +379,7 @@ public class NeuroMessage
     {
         return "{"
             + "\"command\":\"" + command + "\","
-            + "\"game\":\"" + game + "\","
+            + "\"game\":\"" + game + "\""
             + "}";
     }
 }
