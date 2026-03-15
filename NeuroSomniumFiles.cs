@@ -52,6 +52,9 @@ public class AgentController
     public void Initialize()
     {
         network.Connect();
+        NeuroMessage startUpMsg = new NeuroMessage();
+        network.SendString(startUpMsg.StartupToJson());
+
         network.OnMessageReceived += actions.Validate;
         observations.OnBannerText += network.SendString;
     }
@@ -201,8 +204,16 @@ public class ObservationData
 
 public class NeuroMessage
 {
-    public string command { get; set; }
+    public string command = "startup";
     public string game = "AI Somnium Files";
+
+    public string StartupToJson()
+    {
+        return "{"
+            + "\"command\":\"" + command + "\","
+            + "\"game\":\"" + game + "\","
+            + "}";
+    }
 }
 
 public class Action
