@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NeuroSomniumFiles")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+958a4a375c6178fcf3fd4123b1e574aa744600bf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86eedb6527b9a7f7afab8c8bc6184dfd6e5df790")]
 [assembly: System.Reflection.AssemblyProductAttribute("NeuroSomniumFiles")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NeuroSomniumFiles")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -56,6 +56,7 @@ public class AgentController
         observations.OnLookChoicesUpdated += actions.Register;
         observations.OnTermChange += network.SendString;
         actions.OnUpdateActionList += network.SendString;
+        actions.OnResultMessageCreated += network.SendString;
         
         network.Connect();
         NeuroMessage startUpMsg = new NeuroMessage();
@@ -82,12 +83,13 @@ public class ObservationProvider
     public RawImage characterNamePlate;
     public TextMeshProUGUI characterDialogue;
     public TextMeshProUGUI descriptionDialogue;
-    public GameObject lookChoices;
     public string dialogueLastline;
     public string descriptionLastline;
+
+    public GameObject lookChoices;
+    public bool interactLook = false;
     public string currentTerm = "";
     public Dictionary<string, string> CurrentOptions = new Dictionary<string, string>();
-    public bool interactLook = false;
 
     public void Collect(bool searchAllowed)
     {
@@ -238,6 +240,9 @@ public class ObservationProvider
 public class ActionRegistry
 {
     public event Action<string> OnUpdateActionList;
+    public event Action<string> OnResultMessageCreated;
+    
+    private ActionExecutor AE = new ActionExecutor();
     public Dictionary<string,string> actions = new Dictionary<string, string>();
 
     public void Register(Dictionary<string,string> acts)
@@ -255,14 +260,35 @@ public class ActionRegistry
     public void Validate(string json)
     {
         Debug.Log($"this is received in ActionRegistery: {json}");
-        // check valid
-        // if valid send back action success -> then call unregister -> then execute
-        // else only send error back
-    }
+        string id;
+        string action_name;
 
-    public void Execute(string data)
-    {
+        // extract id and action_name
+        JSON jsonHelper = new JSON();
+        id = jsonHelper.ExtractJsonValue(json, "id");
+        action_name = jsonHelper.ExtractJsonValue(json, "name");
         
+        // check valid
+        foreach (var key in actions.Keys)
+        {
+            if (key == action_name)
+            {
+                // send success
+                ActionResultMessage ARMs = new ActionResultMessage(id, true);
+                OnResultMessageCreated?.Invoke(ARMs.ToJson());
+                
+                // call unregister
+                Unregister();
+                
+                // call execute
+                AE.ExecuteAction(action_name);
+                return;
+            }
+        }
+
+        // else only send error back
+        ActionResultMessage ARMf = new ActionResultMessage(id, false);
+        OnResultMessageCreated?.Invoke(ARMf.ToJson());
     }
 
     public string ToJsonRegister()
@@ -338,7 +364,7 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        Logger.CreateLogSource("WS").LogInfo("[WebSocket] Received: " + e.Data);
+        //Logger.CreateLogSource("WS").LogInfo("[WebSocket] Received: " + e.Data);
         try
         {
             System.IO.File.AppendAllText("C:\\temp\\ws_log.txt", e.Data + "\n");
@@ -369,6 +395,66 @@ public class NetworkClient
     }
 }
 
+public class ActionExecutor
+{
+    public void ExecuteAction(string action_name)
+    {
+        switch (action_name)
+        {
+            case "button_up":
+                // simulate button up
+                break;
+            case "button_down":
+                // simulate button down
+                break;
+            case "button_left":
+                // simulate button up
+                break;
+            case "button_right":
+                // simulate button up
+                break;
+            case "look_at_term":
+                // simulate button up
+                break;
+            case "zoom_button":
+                // simulate button up
+                break;
+            case "thermo_button":
+                // simulate button up
+                break;
+            case "night_vision_button":
+                // simulate button up
+                break;
+            case "xray_button":
+                // simulate button up
+                break;
+            case "zoom_thermo_button":
+                // simulate button up
+                break;
+            case "zoom_xray_button":
+                // simulate button up
+                break;
+            case "zoom_night_vision_button":
+                // simulate button up
+                break;
+            
+        }
+    }
+}
+
+// Helper function
+public class JSON
+{
+    public string ExtractJsonValue(string json, string key)
+    {
+        string pattern = $"\"{key}\":\"(.*?)\"";
+        System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(json, pattern);
+        if (match.Success) return match.Groups[1].Value;
+        return "";
+    }
+}
+
+
 // Resources
 public class ObservationData
 {
@@ -398,7 +484,7 @@ public class ContextMessage : NeuroMessage
 
     public ContextMessage(string msg, bool isSilent)
     {
-        this.command = "Context";
+        this.command = "context";
         this.message = msg;
         this.silent = isSilent;
     }
@@ -411,6 +497,29 @@ public class ContextMessage : NeuroMessage
             + "\"data\":{"
             + "\"message\":\"" + message + "\","
             + "\"silent\":" + (silent ? "true" : "false")
+            + "}"
+            + "}";
+    }
+}
+
+public class ActionResultMessage : NeuroMessage
+{
+    public string id;
+    public bool action_success;
+    public ActionResultMessage(string incoming_id, bool incoming_action_success)
+    {
+        this.command = "action/result";
+        this.id = incoming_id;
+        this.action_success = incoming_action_success;
+    }
+
+    public string ToJson()
+    {
+        return "{"
+            + $"\"command\":\"{command}\","
+            + "\"data\":{"
+            + $"\"id\":\"{id}\","
+            + $"\"success\":\"{action_success.ToString().ToLower()}\""
             + "}"
             + "}";
     }
