@@ -338,12 +338,13 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
+        Logger.CreateLogSource("WS").LogInfo("[WebSocket] Received: " + e.Data);
         try
-    {
-        System.IO.File.AppendAllText("C:\\temp\\ws_log.txt", e.Data + "\n");
-    }
-    catch {}
-    
+        {
+            System.IO.File.AppendAllText("C:\\temp\\ws_log.txt", e.Data + "\n");
+        }
+        catch {}
+
         Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
         OnMessageReceived?.Invoke(text);
