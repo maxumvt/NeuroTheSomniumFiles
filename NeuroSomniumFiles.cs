@@ -51,15 +51,15 @@ public class AgentController
 
     public void Initialize()
     {
-        network.Connect();
-        NeuroMessage startUpMsg = new NeuroMessage();
-        network.SendString(startUpMsg.StartupToJson());
-
         network.OnMessageReceived += actions.Validate;
         observations.OnBannerText += network.SendString;
         observations.OnLookChoicesUpdated += actions.Register;
         observations.OnTermChange += network.SendString;
         actions.OnUpdateActionList += network.SendString;
+        
+        network.Connect();
+        NeuroMessage startUpMsg = new NeuroMessage();
+        network.SendString(startUpMsg.StartupToJson());
 
     }
 
@@ -338,6 +338,12 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
+        try
+    {
+        System.IO.File.AppendAllText("C:\\temp\\ws_log.txt", e.Data + "\n");
+    }
+    catch {}
+    
         Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
         OnMessageReceived?.Invoke(text);
