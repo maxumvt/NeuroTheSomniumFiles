@@ -1,14 +1,12 @@
 namespace NeuroSomniumFilesController;
 
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-
-using WebSocketSharp;
-using BepInEx;
 using System.Collections.Generic;
+using WebSocketSharp;
 using System;
-using System.Runtime.Remoting.Contexts;
+using UnityEngine.UI;
+using UnityEngine;
+using BepInEx;
+using TMPro;
 
 [BepInPlugin("com.maxum.dialoglogger", "NeuroSomniumFiles", "1.0.0")]
 public class MyPlugin : BaseUnityPlugin
@@ -247,8 +245,9 @@ public class ActionRegistry
 
     public void Register(Dictionary<string,string> acts)
     {
-        actions = acts;
+        actions = new Dictionary<string, string>(acts);
         OnUpdateActionList?.Invoke(ToJsonRegister());
+        OnUpdateActionList?.Invoke(ToJsonRegisterForce());
     }
 
     public void Unregister()
@@ -262,15 +261,18 @@ public class ActionRegistry
         Debug.Log($"this is received in ActionRegistery: {json}");
         string id;
         string action_name;
+        string command;
 
         // extract id and action_name
         JSON jsonHelper = new JSON();
+        command = jsonHelper.ExtractJsonValue(json, "command");
+        if (command != "action") return;
         id = jsonHelper.ExtractJsonValue(json, "id");
         action_name = jsonHelper.ExtractJsonValue(json, "name");
-        
         // check valid
         foreach (var key in actions.Keys)
         {
+            //System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", key + "\n");
             if (key == action_name)
             {
                 // send success
@@ -314,6 +316,31 @@ public class ActionRegistry
            + "}"
            + "}";
     }
+    
+    public string ToJsonRegisterForce()
+    {
+        // build JSON array of actions
+        string actionsJson = "";
+        int i = 0;
+        foreach (var kv in actions)
+        {
+            if (i > 0) actionsJson += ",";
+            actionsJson += $"\"{kv.Key}\"";
+            i++;
+        }
+
+        return "{"
+            + "\"command\":\"actions/force\","
+            + $"\"game\":\"AI Somnium Files\","
+            + "\"data\":{"
+            + $"\"query\":\"do something\","
+            + $"\"action_names\":[{actionsJson}],"
+            + $"\"state\":\"its a test\","
+            + "\"ephemeral_context\":false,"
+            + "\"priority\":\"low\""
+            + "}"
+            + "}";
+    }
 
     public string ToJsonUnRegister()
     {
@@ -323,10 +350,7 @@ public class ActionRegistry
         foreach (var kv in actions)
         {
             if (i > 0) actionsJson += ",";
-            actionsJson += "{"
-                        + $"\"name\":\"{kv.Key}\","
-                        + $"\"description\":\"{kv.Value}\""
-                        + "}";
+            actionsJson += $"\"{kv.Key}\"";
             i++;
         }
 
@@ -334,7 +358,7 @@ public class ActionRegistry
            + "\"command\":\"actions/unregister\","
            + "\"game\":\"AI Somnium Files\","
            + "\"data\":{"
-           + $"\"actions\":[{actionsJson}]"
+           + $"\"action_names\":[{actionsJson}]"
            + "}"
            + "}";
     }
@@ -364,10 +388,9 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        //Logger.CreateLogSource("WS").LogInfo("[WebSocket] Received: " + e.Data);
         try
         {
-            System.IO.File.AppendAllText("C:\\temp\\ws_log.txt", e.Data + "\n");
+            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", e.Data + "\n");
         }
         catch {}
 
@@ -441,6 +464,7 @@ public class ActionExecutor
         }
     }
 }
+
 
 // Helper function
 public class JSON
@@ -519,7 +543,7 @@ public class ActionResultMessage : NeuroMessage
             + $"\"command\":\"{command}\","
             + "\"data\":{"
             + $"\"id\":\"{id}\","
-            + $"\"success\":\"{action_success.ToString().ToLower()}\""
+            + $"\"success\":{action_success.ToString().ToLower()}"
             + "}"
             + "}";
     }
