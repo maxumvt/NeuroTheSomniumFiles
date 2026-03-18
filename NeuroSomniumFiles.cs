@@ -16,10 +16,11 @@ public class MyPlugin : BaseUnityPlugin
     void Awake()
     {
         var network = new NetworkClient();
-        var actions = new ActionRegistry();
+        var actionExecutor = new ActionExecutor();
+        var actions = new ActionRegistry(actionExecutor);
         var observations = new ObservationProvider();
 
-        agent = new AgentController(network, observations, actions);
+        agent = new AgentController(network, observations, actions, actionExecutor);
 
         agent.Initialize();
     }
@@ -37,11 +38,13 @@ public class AgentController
     private NetworkClient network;
     private ObservationProvider observations;
     private ActionRegistry actions;
-    public AgentController(NetworkClient net, ObservationProvider obs, ActionRegistry act)
+    private ActionExecutor actexe;
+    public AgentController(NetworkClient net, ObservationProvider obs, ActionRegistry act, ActionExecutor ae)
     {
         network = net;
         observations = obs;
         actions = act;
+        actexe = ae;
     }
 
     private float searchTimer = 0;
@@ -237,10 +240,15 @@ public class ObservationProvider
 
 public class ActionRegistry
 {
+    public ActionExecutor AE;
+
+    public ActionRegistry(ActionExecutor actexe)
+    {
+        this.AE = actexe;
+    }
     public event Action<string> OnUpdateActionList;
     public event Action<string> OnResultMessageCreated;
     
-    private ActionExecutor AE = new ActionExecutor();
     public Dictionary<string,string> actions = new Dictionary<string, string>();
 
     public void Register(Dictionary<string,string> acts)
@@ -283,7 +291,7 @@ public class ActionRegistry
                 Unregister();
                 
                 // call execute
-                AE.ExecuteAction(action_name);
+                AE.QueueAction(action_name);
                 return;
             }
         }
@@ -420,24 +428,28 @@ public class NetworkClient
 
 public class ActionExecutor
 {
-    public void ExecuteAction(string action_name)
+
+
+    public void QueueAction(string action_name)
     {
         switch (action_name)
         {
             case "button_up":
-                // simulate button up
+                Input.GetKeyDown(KeyCode.A);
                 break;
             case "button_down":
-                // simulate button down
+                Input.GetKeyDown(KeyCode.A);
                 break;
             case "button_left":
-                // simulate button up
+                //$Root/CommandCanvas/ScreenScaler/Command/Scale/
+                GameObject tryi = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale/SelectL");
+                LuaEventScript tryi2 = tryi?.GetComponent<LuaEventScript>
                 break;
             case "button_right":
-                // simulate button up
+                Input.GetKeyDown(KeyCode.A);
                 break;
             case "look_at_term":
-                // simulate button up
+                Input.GetKeyDown(KeyCode.A);
                 break;
             case "zoom_button":
                 // simulate button up
