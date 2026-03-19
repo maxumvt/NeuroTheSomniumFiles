@@ -428,31 +428,64 @@ public class NetworkClient
 
 public class ActionExecutor
 {
-
-
     public void QueueAction(string action_name)
     {
+        System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", $"This is hopefully called on first. Then I just have to figure out what is not going well {action_name}" + "\n");
         switch (action_name)
         {
             case "button_up":
-                Input.GetKeyDown(KeyCode.A);
+                GameObject up_input = GameObject.Find("$Root/GameController");
+                var up_variable = up_input.GetComponent("InputProc");
+                var up_pad_states = up_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(up_variable);
+                var up_dict = (System.Collections.IDictionary)up_pad_states;
+                var up_button = up_dict["BUTTON_WASD_DPAD_UP"];
+                var up_button_down = up_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                up_button_down.SetValue(up_button, true);
                 break;
             case "button_down":
-                Input.GetKeyDown(KeyCode.A);
+                GameObject down_input = GameObject.Find("$Root/GameController");
+                var down_variable = down_input.GetComponent("InputProc");
+                var down_pad_states = down_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(down_variable);
+                var down_dict = (System.Collections.IDictionary)down_pad_states;
+                var down_button = down_dict["BUTTON_WASD_DPAD_DOWN"];
+                var down_button_down = down_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                down_button_down.SetValue(down_button, true);
                 break;
             case "button_left":
-                //$Root/CommandCanvas/ScreenScaler/Command/Scale/
-                GameObject tryi = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale/SelectL");
-                LuaEventScript tryi2 = tryi?.GetComponent<LuaEventScript>
+                GameObject left_input = GameObject.Find("$Root/GameController");
+                var left_variable = left_input.GetComponent("InputProc");
+                var left_pad_states = left_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(left_variable);
+                var left_dict = (System.Collections.IDictionary)left_pad_states;
+                var left_button = left_dict["BUTTON_WASD_DPAD_LEFT"];
+                var left_button_down = left_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                left_button_down.SetValue(left_button, true);
                 break;
             case "button_right":
-                Input.GetKeyDown(KeyCode.A);
+                GameObject right_input = GameObject.Find("$Root/GameController");
+                var right_variable = right_input.GetComponent("InputProc");
+                var right_pad_states = right_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(right_variable);
+                var right_dict = (System.Collections.IDictionary)right_pad_states;
+                var right_button = right_dict["BUTTON_WASD_DPAD_RIGHT"];
+                var right_button_down = right_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                right_button_down.SetValue(right_button, true);
                 break;
             case "look_at_term":
-                Input.GetKeyDown(KeyCode.A);
+                GameObject x_input = GameObject.Find("$Root/GameController");
+                var x_variable = x_input.GetComponent("InputProc");
+                var x_pad_states = x_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(x_variable);
+                var x_dict = (System.Collections.IDictionary)x_pad_states;
+                var x_button = x_dict["BUTTON_X"];
+                var x_button_down = x_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                x_button_down.SetValue(x_button, true);
                 break;
             case "zoom_button":
-                // simulate button up
+                GameObject zoom_input = GameObject.Find("$Root/GameController");
+                var zoom_variable = zoom_input.GetComponent("InputProc");
+                var zoom_pad_states = zoom_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(zoom_variable);
+                var zoom_dict = (System.Collections.IDictionary)zoom_pad_states;
+                var zoom_button = zoom_dict["BUTTON_LSTICK"];
+                var zoom_button_down = zoom_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                zoom_button_down.SetValue(zoom_button, true);
                 break;
             case "thermo_button":
                 // simulate button up
