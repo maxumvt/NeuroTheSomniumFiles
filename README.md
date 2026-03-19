@@ -1,5 +1,5 @@
 # NeuroSomniumFiles
-AI Somnium Files mod for Neuro and a human to play together.
+AI The Somnium Files mod for Neuro and a human to play together.
 
 # Disclaimer
 - I don't own any of the Unity files that come from AI Somnium Files.
