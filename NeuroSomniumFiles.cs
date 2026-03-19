@@ -470,13 +470,13 @@ public class ActionExecutor
                 right_button_down.SetValue(right_button, true);
                 break;
             case "look_at_term":
-                GameObject x_input = GameObject.Find("$Root/GameController");
-                var x_variable = x_input.GetComponent("InputProc");
-                var x_pad_states = x_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(x_variable);
-                var x_dict = (System.Collections.IDictionary)x_pad_states;
-                var x_button = x_dict["BUTTON_X"];
-                var x_button_down = x_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-                x_button_down.SetValue(x_button, true);
+                GameObject submit_input = GameObject.Find("$Root/GameController");
+                var submit_variable = submit_input.GetComponent("InputProc");
+                var submit_pad_states = submit_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(submit_variable);
+                var submit_dict = (System.Collections.IDictionary)submit_pad_states;
+                var submit_button = submit_dict["Submit"];
+                var submit_button_down = submit_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                submit_button_down.SetValue(submit_button, true);
                 break;
             case "zoom_button":
                 GameObject zoom_input = GameObject.Find("$Root/GameController");
@@ -494,7 +494,13 @@ public class ActionExecutor
                 // simulate button up
                 break;
             case "xray_button":
-                // simulate button up
+                GameObject xray_input = GameObject.Find("$Root/GameController");
+                var xray_variable = xray_input.GetComponent("InputProc");
+                var xray_pad_states = xray_variable.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(xray_variable);
+                var xray_dict = (System.Collections.IDictionary)xray_pad_states;
+                var xray_button = xray_dict["BUTTON_LSTICK"];
+                var xray_button_down = xray_button.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                xray_button_down.SetValue(xray_button, true);
                 break;
             case "zoom_thermo_button":
                 // simulate button up
