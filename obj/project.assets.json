@@ -191,9 +191,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GameModding\\NeuroSomniumFiles\\NeuroSomniumFiles.csproj",
-      "projectName": "NeuroSomniumFiles",
-      "projectPath": "D:\\GameModding\\NeuroSomniumFiles\\NeuroSomniumFiles.csproj",
+      "projectUniqueName": "D:\\GameModding\\NeuroSomniumFiles\\NeuroTheSomniumFiles.csproj",
+      "projectName": "NeuroTheSomniumFiles",
+      "projectPath": "D:\\GameModding\\NeuroSomniumFiles\\NeuroTheSomniumFiles.csproj",
       "packagesPath": "C:\\Users\\melvi\\.nuget\\packages\\",
       "outputPath": "D:\\GameModding\\NeuroSomniumFiles\\obj\\",
       "projectStyle": "PackageReference",
