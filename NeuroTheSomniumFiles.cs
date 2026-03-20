@@ -507,6 +507,8 @@ public class ObservationProvider
     }
     private void SendBannerText(string message, bool isSilent)
     {
+        message = TextCleaner.Clean(message);
+
         ContextMessage cMsg = new ContextMessage(message, isSilent);
         OnBannerText?.Invoke(cMsg.ToJson());
     }
@@ -666,11 +668,11 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        try
-        {
-            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", e.Data + "\n");
-        }
-        catch {}
+        // try
+        // {
+        //     System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", e.Data + "\n");
+        // }
+        // catch {}
 
         Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
@@ -691,6 +693,7 @@ public class NetworkClient
     {
         if (ws != null && ws.IsAlive)
         {
+            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", json + "\n");
             ws.Send(json);
         }
     }
@@ -780,10 +783,53 @@ public class JSON
 
 
 // Resources
-// A class for cleaning up text send to Neuro
-//  Example: transform ui_main_name_c01 into Kaname Date
-//  Example: remove <width></width> from texts
-//  Example: remove <color> and change the text to telepathy between Aiba and Date
+public static class TextCleaner
+{
+    static Dictionary<string, string> nameMap = new Dictionary<string, string>()
+    {
+        {"ui_main_name_c00", "Unknown"},
+        {"ui_main_name_c01", "Kaname Date"},
+        {"ui_main_name_c02", "Aiba"},
+        {"ui_main_name_c09", "Boss"},
+        {"ui_main_name_c11", "Mayumi ..."},
+    };
+
+    public static string Clean(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+
+        string text = input;
+
+        text = NormalizeWhitespace(text);
+        text = ReplaceQuotes(text);
+        text = RemoveRichText(text);
+        text = ResolveCharacterNames(text);
+
+        return text;
+    }
+    public static string ReplaceQuotes(string text)
+    {
+        return text.Replace("\"","\'");
+    }
+    public static string RemoveRichText(string text)
+    {
+        return System.Text.RegularExpressions.Regex.Replace(text, "<.*?>", string.Empty);
+    }
+    public static string ResolveCharacterNames(string text)
+    {
+        foreach (var kv in nameMap)
+        {
+            text = text.Replace(kv.Key, kv.Value);
+        }
+        return text;
+    }
+    public static string NormalizeWhitespace(string text)
+    {
+        return text.Replace("\r\n", " ")
+               .Replace("\n", " ")
+               .Replace("\r", " ");
+    }
+}
 
 public class NeuroMessage
 {
