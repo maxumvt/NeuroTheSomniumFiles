@@ -128,14 +128,15 @@ public class ObservationProvider
     public TextMeshProUGUI somniumLyricsDialogue;
     public string somniumLyricsLastLine;
 
-    // Interact options global:
+    // Interact options Investigation:
     public GameObject lookChoices;
-    public GameObject SomniumInteractOptionsObject;
     public bool interactLook = false;
-    public bool somniumInteractLook = false;
-    public bool somniumInteract = false;
     public string currentTerm = "";
     public Dictionary<string, string> CurrentOptions = new Dictionary<string, string>();
+    // Interaction options Somnium
+    public GameObject SomniumInteractOptionsObject;
+    public bool somniumInteractLook = false;
+    public bool somniumInteract = false;
     public Dictionary<string, string> SomniumCurrentOptions = new Dictionary<string, string>();
 
 
@@ -477,14 +478,22 @@ public class ObservationProvider
 
 
     // Helper functions
+    List<string> moveable = new List<string>(){"zoom_button", "xray_button", "night_vision_button", "zoom_night_vision_button", "zoom_xray_button"};
     private void AddButtonIfActive(string buttonName, string KeyPrefix, string customText="")
     {
+        string finalKey = KeyPrefix;
         var buttonObj = lookChoices.transform.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj != null && buttonObj.activeSelf) // Make sure the button exists AND is active
         {
             var textComp = lookChoices.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>(); // Store the button GameObject
-            if ( textComp != null) CurrentOptions[KeyPrefix] = textComp.text; // Use the button text as action description
-            else CurrentOptions[KeyPrefix] = customText; // Use custom text as action description
+            if (moveable.Contains(KeyPrefix))
+            {
+                bool activeComp = lookChoices.transform.Find(buttonName + "/Button").gameObject.activeSelf;
+                if (activeComp) finalKey += "_l";
+                else finalKey += "_r";
+            }
+            if ( textComp != null) CurrentOptions[finalKey] = textComp.text; // Use the button text as action description
+            else CurrentOptions[finalKey] = customText; // Use custom text as action description
         }
     }
     private void SomniumAddButtonIfActive(string buttonName, string KeyPrefix)
@@ -492,9 +501,7 @@ public class ObservationProvider
         var buttonObj = SomniumInteractOptionsObject.transform.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj != null && buttonObj.activeSelf) // Make sure the button exists AND is active
         {
-            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", buttonObj.activeSelf + "\n");
             var textComp = SomniumInteractOptionsObject.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>(); // Store the button GameObject
-            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", $"Button: {buttonName}, TextComp: {textComp}, Text: {textComp?.text}" + "\n");
             if ( textComp != null) SomniumCurrentOptions[KeyPrefix] = textComp.text; // Use the button text as action description
         }
     }
@@ -710,26 +717,38 @@ public class ActionExecutor
             case "look_at_term":
                 PressButton("Submit");
                 break;
-            case "zoom_button":
+            case "zoom_button_l":
                 PressButton("BUTTON_LSTICK");
                 break;
-            case "thermo_button":
-                PressButton("BUTTON_LSTICK"); // simulate thermo, but uncertain button
-                break;
-            case "night_vision_button":
-                PressButton("BUTTON_LSTICK"); // simulate night vision, but uncertain button
-                break;
-            case "xray_button":
+            case "thermo_button_l":
                 PressButton("BUTTON_LSTICK");
                 break;
-            case "zoom_thermo_button":
-                PressButton("BUTTON_LSTICK"); // simulate zoom thermo, but uncertain button
+            case "night_vision_button_l":
+                PressButton("BUTTON_LSTICK");
                 break;
-            case "zoom_xray_button":
-                PressButton("BUTTON_LSTICK"); // simulate zoom xray, but uncertain button
+            case "night_vision_button_r":
+                PressButton("BUTTON_RSTICK");
                 break;
-            case "zoom_night_vision_button":
-                PressButton("BUTTON_LSTICK"); // simulate zoom night vision, but uncertain button
+            case "xray_button_l":
+                PressButton("BUTTON_LSTICK");
+                break;
+            case "xray_button_r":
+                PressButton("BUTTON_RSTICK");
+                break;
+            case "zoom_thermo_button_l":
+                PressButton("BUTTON_LSTICK");
+                break;
+            case "zoom_xray_button_l":
+                PressButton("BUTTON_LSTICK"); 
+                break;
+            case "zoom_xray_button_r":
+                PressButton("BUTTON_RSTICK"); 
+                break;
+            case "zoom_night_vision_button_l":
+                PressButton("BUTTON_LSTICK");
+                break;
+            case "zoom_night_vision_button_r":
+                PressButton("BUTTON_RSTICK");
                 break;
             
         }
