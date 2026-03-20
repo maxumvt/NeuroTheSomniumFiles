@@ -492,7 +492,7 @@ public class ObservationProvider
                 if (activeComp) finalKey += "_l";
                 else finalKey += "_r";
             }
-            if ( textComp != null) CurrentOptions[finalKey] = textComp.text; // Use the button text as action description
+            if ( textComp != null) CurrentOptions[finalKey] = TextCleaner.Clean(textComp.text); // Use the button text as action description
             else CurrentOptions[finalKey] = customText; // Use custom text as action description
         }
     }
@@ -790,8 +790,14 @@ public static class TextCleaner
         {"ui_main_name_c00", "Unknown"},
         {"ui_main_name_c01", "Kaname Date"},
         {"ui_main_name_c02", "Aiba"},
+        {"ui_main_name_c04", "Hitomi Sagan"},
+        {"ui_main_name_c05", "Iris Sagan"},
+        {"ui_main_name_c06", "Ota Matsushita"},
         {"ui_main_name_c09", "Boss"},
-        {"ui_main_name_c11", "Mayumi ..."},
+        {"ui_main_name_c11", "Mayumi Matsushita"},
+        {"ui_main_name_c51", "Inspector"},
+        {"ui_main_name_c52", "Policeman"},
+        {"ui_main_name_c102", "A-set"},
     };
 
     public static string Clean(string input)
