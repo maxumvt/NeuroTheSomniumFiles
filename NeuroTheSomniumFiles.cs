@@ -91,6 +91,10 @@ public class ObservationProvider
     public string eventDialogueLastLine;
     public TextMeshProUGUI eventNarrationDialogue;
     public string eventNarrationLastLine;
+    // Flash Back:
+    public RawImage flashBackMessageNamePlate;
+    public TextMeshProUGUI flashBackMessageDialogue;
+    public string flashBackDialogueLastLine;
     // Subtitle:
     public RawImage subtitleNamePlate;
     public TextMeshProUGUI subtitleDialogue;
@@ -112,6 +116,10 @@ public class ObservationProvider
     public string somniumEventDialogueLastLine;
     public TextMeshProUGUI somniumEventNarrationDialogue;
     public string somniumEventNarrationLastLine;
+    // Flash Back:
+    public RawImage somniumFlashBackMessageNamePlate;
+    public TextMeshProUGUI somniumFlashBackMessageDialogue;
+    public string somniumFlashBackDialogueLastLine;
     // Subtitle:
     public RawImage somniumSubtitleNamePlate;
     public TextMeshProUGUI somniumSubtitleDialogue;
@@ -137,6 +145,7 @@ public class ObservationProvider
         NarrationWindow(searchAllowed);
         EventMessageWindow(searchAllowed);
         EventNarrationWindow(searchAllowed);
+        FlashBackWindow(searchAllowed);
         SubtitleWindow(searchAllowed);
         Lyrics(searchAllowed);
         InvestigationInteractOptions(searchAllowed);
@@ -144,6 +153,7 @@ public class ObservationProvider
         SomniumMessageWindow(searchAllowed);
         SomniumNarrationWindow(searchAllowed);
         SomniumEventMessageWindow(searchAllowed);
+        //SomniumFlashBackWindow(searchAllowed);
         SomniumEventNarrationWindow(searchAllowed);
         SomniumSubtitleWindow(searchAllowed);
         SomniumLyrics(searchAllowed);
@@ -211,6 +221,23 @@ public class ObservationProvider
             {
                 eventNarrationLastLine = descrText;
                 SendBannerText($"Narration text: {descrText}", false);
+            }
+        }
+    }
+    public void FlashBackWindow(bool allowSearch)
+    {
+        if (allowSearch && flashBackMessageNamePlate == null) {flashBackMessageNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && flashBackMessageDialogue == null) {flashBackMessageDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        
+        if (flashBackMessageNamePlate != null && flashBackMessageDialogue != null)
+        {
+            string nameText = flashBackMessageNamePlate.mainTexture.name;
+            string dialogueText = flashBackMessageDialogue.text;
+
+            if (!string.IsNullOrEmpty(dialogueText) && flashBackDialogueLastLine != dialogueText)
+            {
+                flashBackDialogueLastLine = dialogueText;
+                SendBannerText($"In a flashback {nameText} said: {dialogueText}", false);
             }
         }
     }
@@ -355,6 +382,23 @@ public class ObservationProvider
             }
         }
     }
+    public void SomniumFlashBackWindow(bool allowSearch)
+    {
+        if (allowSearch && somniumFlashBackMessageNamePlate == null) {somniumFlashBackMessageNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && somniumFlashBackMessageDialogue == null) {somniumFlashBackMessageDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        
+        if (somniumFlashBackMessageNamePlate != null && somniumFlashBackMessageDialogue != null)
+        {
+            string nameText = somniumFlashBackMessageNamePlate.mainTexture.name;
+            string dialogueText = somniumFlashBackMessageDialogue.text;
+
+            if (!string.IsNullOrEmpty(dialogueText) && somniumFlashBackDialogueLastLine != dialogueText)
+            {
+                somniumFlashBackDialogueLastLine = dialogueText;
+                SendBannerText($"In a flashback {nameText} said: {dialogueText}", false);
+            }
+        }
+    }
     public void SomniumSubtitleWindow(bool allowSearch)
     {
         if (allowSearch && somniumSubtitleNamePlate == null) {somniumSubtitleNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
@@ -395,30 +439,30 @@ public class ObservationProvider
             SomniumInteractOptionsObject = GameObject.Find("$Root/3DUI");
             if (SomniumInteractOptionsObject == null) return;
         }
-        bool somniumInteractActive = false;
+        
 
-        // Check UI active
-        if (SomniumInteractOptionsObject.gameObject.activeSelf)
+        bool anyActive = false;
+        if (SomniumInteractOptionsObject.gameObject.activeSelf) // Only check buttons if the UI itself is active
         {
-            // Check buttons
             for (int i = 0; i < 3; i++)
             {
                 if (SomniumInteractOptionsObject.transform.GetChild(i).gameObject.activeSelf)
                 {
-                    somniumInteractActive = true;
+                    anyActive = true;
                     break;
                 }
             }
         }
-
-        // Early exit if nothing is active
-        if (!somniumInteractActive) return;
-
+        // If UI is off OR no buttons are active → no interaction
+        if (!anyActive)
+        {
+            if (!somniumInteractLook) return; // already inactive
+            somniumInteractLook = false;
+            return;
+        }
         // Only continue if state changed
-        if (somniumInteractLook == somniumInteractActive) return;
-
-        somniumInteractLook = somniumInteractActive;
-        
+        if (somniumInteractLook == anyActive) return;
+        somniumInteractLook = anyActive;
 
         SomniumCurrentOptions.Clear();
 
