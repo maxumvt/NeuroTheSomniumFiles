@@ -74,71 +74,50 @@ public class AgentController
 
 public class ObservationProvider
 {
+    public class DialogueSet
+    {
+        public RawImage namePlate;
+        public TextMeshProUGUI dialogue;
+        public string lastLine;
+    } 
+    public class TextOnlySet
+    {
+        public TextMeshProUGUI message;
+        public string lastLine;
+    }
+    public class OptionSet
+    {
+        public GameObject optionsObject;
+        public bool interactionActive;
+        public Dictionary<string, string> currentOptions;
+        public string focusTerm;
+    }
+
     public event Action<string> OnTermChange;
     public event Action<string> OnBannerText;
     public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
 
     // Condition trackers Investigation
-    // Normal:
-    public RawImage messageNamePlate;
-    public TextMeshProUGUI messageDialogue;
-    public string dialogueLastLine;
-    public TextMeshProUGUI narrationDialogue;
-    public string narrationLastLine;
-    // Event:
-    public RawImage eventMessageNamePlate;
-    public TextMeshProUGUI eventMessageDialogue;
-    public string eventDialogueLastLine;
-    public TextMeshProUGUI eventNarrationDialogue;
-    public string eventNarrationLastLine;
-    // Flash Back:
-    public RawImage flashBackMessageNamePlate;
-    public TextMeshProUGUI flashBackMessageDialogue;
-    public string flashBackDialogueLastLine;
-    // Subtitle:
-    public RawImage subtitleNamePlate;
-    public TextMeshProUGUI subtitleDialogue;
-    public string subtitleLastLine;
-    // Lyrics:
-    public TextMeshProUGUI lyricsDialogue;
-    public string lyricsLastLine;
+    public DialogueSet message = new DialogueSet();
+    public TextOnlySet narration = new TextOnlySet();
+    public DialogueSet eventMessage = new DialogueSet();
+    public TextOnlySet eventNarration = new TextOnlySet();
+    public DialogueSet flashBackMessage = new DialogueSet();
+    public DialogueSet subtitle = new DialogueSet();
+    public TextOnlySet lyrics = new TextOnlySet();
 
     // Condition trackers Somnium
-    // Normal:
-    public RawImage somniumMessageNamePlate;
-    public TextMeshProUGUI somniumMessageDialogue;
-    public string somniumDialogueLastLine;
-    public TextMeshProUGUI somniumNarrationDialogue;
-    public string somniumNarrationLastLine;
-    // Event:
-    public RawImage somniumEventMessageNamePlate;
-    public TextMeshProUGUI somniumEventMessageDialogue;
-    public string somniumEventDialogueLastLine;
-    public TextMeshProUGUI somniumEventNarrationDialogue;
-    public string somniumEventNarrationLastLine;
-    // Flash Back:
-    public RawImage somniumFlashBackMessageNamePlate;
-    public TextMeshProUGUI somniumFlashBackMessageDialogue;
-    public string somniumFlashBackDialogueLastLine;
-    // Subtitle:
-    public RawImage somniumSubtitleNamePlate;
-    public TextMeshProUGUI somniumSubtitleDialogue;
-    public string somniumSubtitleLastLine;
-    // Lyrics:
-    public TextMeshProUGUI somniumLyricsDialogue;
-    public string somniumLyricsLastLine;
+    public DialogueSet somniumMessage = new DialogueSet();
+    public TextOnlySet somniumNarration = new TextOnlySet();
+    public DialogueSet somniumEventMessage = new DialogueSet();
+    public TextOnlySet somniumEventNarration = new TextOnlySet();
+    public DialogueSet somniumFlashBackMessage = new DialogueSet();
+    public DialogueSet somniumSubtitle = new DialogueSet();
+    public TextOnlySet somniumLyrics = new TextOnlySet();
 
-    // Interact options Investigation:
-    public GameObject lookChoices;
-    public bool interactLook = false;
-    public string currentTerm = "";
-    public Dictionary<string, string> CurrentOptions = new Dictionary<string, string>();
-    // Interaction options Somnium
-    public GameObject SomniumInteractOptionsObject;
-    public bool somniumInteractLook = false;
-    public bool somniumInteract = false;
-    public Dictionary<string, string> SomniumCurrentOptions = new Dictionary<string, string>();
-
+    // Interact options
+    public OptionSet investigationInteraction = new OptionSet();
+    public OptionSet somniumInteraction = new OptionSet();
 
     public void Collect(bool searchAllowed)
     {
@@ -165,143 +144,143 @@ public class ObservationProvider
     // Investigation
     public void MessageWindow(bool allowSearch)
     {
-        if (allowSearch && messageNamePlate == null) {messageNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && messageDialogue == null) {messageDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && message.namePlate == null) {message.namePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && message.dialogue == null) {message.dialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (messageNamePlate != null && messageDialogue != null)
+        if (message.namePlate != null && message.dialogue != null)
         {
-            string nameText = messageNamePlate.mainTexture.name;
-            string dialogueText = messageDialogue.text;
+            string nameText = message.namePlate.mainTexture.name;
+            string dialogueText = message.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && dialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && message.lastLine != dialogueText)
             {
-                dialogueLastLine = dialogueText;
+                message.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void NarrationWindow(bool allowSearch)
     {
-        if (allowSearch && narrationDialogue == null)  narrationDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
-        if (narrationDialogue != null)
+        if (allowSearch && narration.message == null)  narration.message = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
+        if (narration.message != null)
         {
-            string descrText = narrationDialogue.text;
+            string descrText = narration.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != narrationLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != narration.lastLine))
             {
-                narrationLastLine = descrText;
+                narration.lastLine = descrText;
                 SendBannerText($"Narration text: {descrText}", false);
             }
         }
     }
     public void EventMessageWindow(bool allowSearch)
     {
-        if (allowSearch && eventMessageNamePlate == null) {eventMessageNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && eventMessageDialogue == null) {eventMessageDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && eventMessage.namePlate == null) {eventMessage.namePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && eventMessage.dialogue == null) {eventMessage.dialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (eventMessageNamePlate != null && eventMessageDialogue != null)
+        if (eventMessage.namePlate != null && eventMessage.dialogue != null)
         {
-            string nameText = eventMessageNamePlate.mainTexture.name;
-            string dialogueText = eventMessageDialogue.text;
+            string nameText = eventMessage.namePlate.mainTexture.name;
+            string dialogueText = eventMessage.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && eventDialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && eventMessage.lastLine != dialogueText)
             {
-                eventDialogueLastLine = dialogueText;
+                eventMessage.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void EventNarrationWindow(bool allowSearch)
     {
-        if (allowSearch && eventNarrationDialogue == null)  eventNarrationDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventNarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
-        if (eventNarrationDialogue != null)
+        if (allowSearch && eventNarration.message == null)  eventNarration.message = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/EventNarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
+        if (eventNarration.message != null)
         {
-            string descrText = eventNarrationDialogue.text;
+            string descrText = eventNarration.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != eventNarrationLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != eventNarration.lastLine))
             {
-                eventNarrationLastLine = descrText;
+                eventNarration.lastLine = descrText;
                 SendBannerText($"Narration text: {descrText}", false);
             }
         }
     }
     public void FlashBackWindow(bool allowSearch)
     {
-        if (allowSearch && flashBackMessageNamePlate == null) {flashBackMessageNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && flashBackMessageDialogue == null) {flashBackMessageDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && flashBackMessage.namePlate == null) {flashBackMessage.namePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && flashBackMessage.dialogue == null) {flashBackMessage.dialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (flashBackMessageNamePlate != null && flashBackMessageDialogue != null)
+        if (flashBackMessage.namePlate != null && flashBackMessage.dialogue != null)
         {
-            string nameText = flashBackMessageNamePlate.mainTexture.name;
-            string dialogueText = flashBackMessageDialogue.text;
+            string nameText = flashBackMessage.namePlate.mainTexture.name;
+            string dialogueText = flashBackMessage.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && flashBackDialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && flashBackMessage.lastLine != dialogueText)
             {
-                flashBackDialogueLastLine = dialogueText;
+                flashBackMessage.lastLine = dialogueText;
                 SendBannerText($"In a flashback {nameText} said: {dialogueText}", false);
             }
         }
     }
     public void SubtitleWindow(bool allowSearch)
     {
-        if (allowSearch && subtitleNamePlate == null) {subtitleNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && subtitleDialogue == null) {subtitleDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && subtitle.namePlate == null) {subtitle.namePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && subtitle.dialogue == null) {subtitle.dialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (subtitleNamePlate != null && subtitleDialogue != null)
+        if (subtitle.namePlate != null && subtitle.dialogue != null)
         {
-            string nameText = subtitleNamePlate.mainTexture.name;
-            string dialogueText = subtitleDialogue.text;
+            string nameText = subtitle.namePlate.mainTexture.name;
+            string dialogueText = subtitle.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && subtitleLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && subtitle.lastLine != dialogueText)
             {
-                subtitleLastLine = dialogueText;
+                subtitle.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void Lyrics(bool allowSearch)
     {
-        if (allowSearch && lyricsDialogue == null)  lyricsDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/Lyrics/Back/Text")?.GetComponent<TextMeshProUGUI>();
-        if (lyricsDialogue != null)
+        if (allowSearch && lyrics.message == null)  lyrics.message = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/Lyrics/Back/Text")?.GetComponent<TextMeshProUGUI>();
+        if (lyrics.message != null)
         {
-            string descrText = lyricsDialogue.text;
+            string descrText = lyrics.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != lyricsLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != lyrics.lastLine))
             {
-                lyricsLastLine = descrText;
+                lyrics.lastLine = descrText;
                 SendBannerText($"Lyrics text: {descrText}", false);
             }
         }
     }
     public void InvestigationInteractOptions(bool allowSearch)
     {
-        if (lookChoices == null)
+        if (investigationInteraction.optionsObject == null)
         {
             if (!allowSearch) return;
 
-            lookChoices = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale");
-            if (lookChoices == null) return;
+            investigationInteraction.optionsObject = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale");
+            if (investigationInteraction.optionsObject == null) return;
         }
 
-        bool lookActive = lookChoices.transform.Find("Look").gameObject.activeSelf;
+        bool lookActive = investigationInteraction.optionsObject.transform.Find("Look").gameObject.activeSelf;
 
-        if (interactLook == lookActive) return; // no change
-        interactLook = lookActive;
+        if (investigationInteraction.interactionActive == lookActive) return; // no change
+        investigationInteraction.interactionActive = lookActive;
 
-        CurrentOptions.Clear();
+        investigationInteraction.currentOptions.Clear();
         if (!lookActive)
         {
-            currentTerm = "";
+            investigationInteraction.focusTerm = "";
             return;
         }
 
         // update term
-        string termText = lookChoices.transform.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
-        currentTerm = termText ?? "";
-        ContextMessage cMsg = new ContextMessage($"Looking at {currentTerm}", false);
+        string termText = investigationInteraction.optionsObject.transform.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+        investigationInteraction.focusTerm = termText ?? "";
+        ContextMessage cMsg = new ContextMessage($"Looking at {investigationInteraction.focusTerm}", false);
         OnTermChange?.Invoke(cMsg.ToJson());
         
-        CurrentOptions["look_at_term"] = $"Look at {currentTerm}";
+        investigationInteraction.currentOptions["look_at_term"] = $"Look at {investigationInteraction.focusTerm}";
 
         // Checks if button is and is active
         AddButtonIfActive("SelectU", "button_up");
@@ -317,137 +296,137 @@ public class ObservationProvider
         AddButtonIfActive("ZoomNV", "zoom_night_vision_button", $"Night vision and zoom into {termText}");
 
         // emit event
-        OnLookChoicesUpdated?.Invoke(CurrentOptions);
+        OnLookChoicesUpdated?.Invoke(investigationInteraction.currentOptions);
     }
 
     // Somnium
     public void SomniumMessageWindow(bool allowSearch)
     {
-        if (allowSearch && somniumMessageNamePlate == null) {somniumMessageNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && somniumMessageDialogue == null) {somniumMessageDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && somniumMessage.namePlate == null) {somniumMessage.namePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && somniumMessage.dialogue == null) {somniumMessage.dialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (somniumMessageNamePlate != null && somniumMessageDialogue != null)
+        if (somniumMessage.namePlate != null && somniumMessage.dialogue != null)
         {
-            string nameText = somniumMessageNamePlate.mainTexture.name;
-            string dialogueText = somniumMessageDialogue.text;
+            string nameText = somniumMessage.namePlate.mainTexture.name;
+            string dialogueText = somniumMessage.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && somniumDialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && somniumMessage.lastLine != dialogueText)
             {
-                somniumDialogueLastLine = dialogueText;
+                somniumMessage.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void SomniumNarrationWindow(bool allowSearch)
     {
-        if (allowSearch && somniumNarrationDialogue == null)  somniumNarrationDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
-        if (somniumNarrationDialogue != null)
+        if (allowSearch && somniumNarration.message == null)  somniumNarration.message = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
+        if (somniumNarration.message != null)
         {
-            string descrText = somniumNarrationDialogue.text;
+            string descrText = somniumNarration.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumNarrationLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumNarration.lastLine))
             {
-                somniumNarrationLastLine = descrText;
+                somniumNarration.lastLine = descrText;
                 SendBannerText($"Narration text: {descrText}", false);
             }
         }
     }
     public void SomniumEventMessageWindow(bool allowSearch)
     {
-        if (allowSearch && somniumEventMessageNamePlate == null) {somniumEventMessageNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && somniumEventMessageDialogue == null) {somniumEventMessageDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && somniumEventMessage.namePlate == null) {somniumEventMessage.namePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && somniumEventMessage.dialogue == null) {somniumEventMessage.dialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventMessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (somniumEventMessageNamePlate != null && somniumEventMessageDialogue != null)
+        if (somniumEventMessage.namePlate != null && somniumEventMessage.dialogue != null)
         {
-            string nameText = somniumEventMessageNamePlate.mainTexture.name;
-            string dialogueText = somniumEventMessageDialogue.text;
+            string nameText = somniumEventMessage.namePlate.mainTexture.name;
+            string dialogueText = somniumEventMessage.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && somniumEventDialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && somniumEventMessage.lastLine != dialogueText)
             {
-                somniumEventDialogueLastLine = dialogueText;
+                somniumEventMessage.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void SomniumEventNarrationWindow(bool allowSearch)
     {
-        if (allowSearch && somniumEventNarrationDialogue == null)  somniumEventNarrationDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventNarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
-        if (somniumEventNarrationDialogue != null)
+        if (allowSearch && somniumEventNarration.message == null)  somniumEventNarration.message = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/EventNarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
+        if (somniumEventNarration.message != null)
         {
-            string descrText = somniumEventNarrationDialogue.text;
+            string descrText = somniumEventNarration.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumEventNarrationLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumEventNarration.lastLine))
             {
-                somniumEventNarrationLastLine = descrText;
+                somniumEventNarration.lastLine = descrText;
                 SendBannerText($"Narration text: {descrText}", false);
             }
         }
     }
     public void SomniumFlashBackWindow(bool allowSearch)
     {
-        if (allowSearch && somniumFlashBackMessageNamePlate == null) {somniumFlashBackMessageNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && somniumFlashBackMessageDialogue == null) {somniumFlashBackMessageDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && somniumFlashBackMessage.namePlate == null) {somniumFlashBackMessage.namePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && somniumFlashBackMessage.dialogue == null) {somniumFlashBackMessage.dialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/FlashBackWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (somniumFlashBackMessageNamePlate != null && somniumFlashBackMessageDialogue != null)
+        if (somniumFlashBackMessage.namePlate != null && somniumFlashBackMessage.dialogue != null)
         {
-            string nameText = somniumFlashBackMessageNamePlate.mainTexture.name;
-            string dialogueText = somniumFlashBackMessageDialogue.text;
+            string nameText = somniumFlashBackMessage.namePlate.mainTexture.name;
+            string dialogueText = somniumFlashBackMessage.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && somniumFlashBackDialogueLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && somniumFlashBackMessage.lastLine != dialogueText)
             {
-                somniumFlashBackDialogueLastLine = dialogueText;
+                somniumFlashBackMessage.lastLine = dialogueText;
                 SendBannerText($"In a flashback {nameText} said: {dialogueText}", false);
             }
         }
     }
     public void SomniumSubtitleWindow(bool allowSearch)
     {
-        if (allowSearch && somniumSubtitleNamePlate == null) {somniumSubtitleNamePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && somniumSubtitleDialogue == null) {somniumSubtitleDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if (allowSearch && somniumSubtitle.namePlate == null) {somniumSubtitle.namePlate = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && somniumSubtitle.dialogue == null) {somniumSubtitle.dialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/SubtitleWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
         
-        if (somniumSubtitleNamePlate != null && somniumSubtitleDialogue != null)
+        if (somniumSubtitle.namePlate != null && somniumSubtitle.dialogue != null)
         {
-            string nameText = somniumSubtitleNamePlate.mainTexture.name;
-            string dialogueText = somniumSubtitleDialogue.text;
+            string nameText = somniumSubtitle.namePlate.mainTexture.name;
+            string dialogueText = somniumSubtitle.dialogue.text;
 
-            if (!string.IsNullOrEmpty(dialogueText) && somniumSubtitleLastLine != dialogueText)
+            if (!string.IsNullOrEmpty(dialogueText) && somniumSubtitle.lastLine != dialogueText)
             {
-                somniumSubtitleLastLine = dialogueText;
+                somniumSubtitle.lastLine = dialogueText;
                 SendBannerText($"{nameText} says: {dialogueText}", false);
             }
         }
     }
     public void SomniumLyrics(bool allowSearch)
     {
-        if (allowSearch && somniumLyricsDialogue == null)  somniumLyricsDialogue = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/Lyrics/Back/Text")?.GetComponent<TextMeshProUGUI>();
-        if (somniumLyricsDialogue != null)
+        if (allowSearch && somniumLyrics.message == null)  somniumLyrics.message = GameObject.Find("$Root/Canvas (1)/ScreenScaler/UIOff1/PanelNode/Lyrics/Back/Text")?.GetComponent<TextMeshProUGUI>();
+        if (somniumLyrics.message != null)
         {
-            string descrText = somniumLyricsDialogue.text;
+            string descrText = somniumLyrics.message.text;
             // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
-            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumLyricsLastLine))
+            if (!string.IsNullOrEmpty(descrText) && (descrText != somniumLyrics.lastLine))
             {
-                somniumLyricsLastLine = descrText;
+                somniumLyrics.lastLine = descrText;
                 SendBannerText($"Lyrics text: {descrText}", false);
             }
         }
     }
     public void SomniumInteractOptions(bool allowSearch)
     {
-        if (SomniumInteractOptionsObject == null)
+        if (somniumInteraction.optionsObject == null)
         {
             if (!allowSearch) return;
 
-            SomniumInteractOptionsObject = GameObject.Find("$Root/3DUI");
-            if (SomniumInteractOptionsObject == null) return;
+            somniumInteraction.optionsObject = GameObject.Find("$Root/3DUI");
+            if (somniumInteraction.optionsObject == null) return;
         }
         
 
         bool anyActive = false;
-        if (SomniumInteractOptionsObject.gameObject.activeSelf) // Only check buttons if the UI itself is active
+        if (somniumInteraction.optionsObject.gameObject.activeSelf) // Only check buttons if the UI itself is active
         {
             for (int i = 0; i < 3; i++)
             {
-                if (SomniumInteractOptionsObject.transform.GetChild(i).gameObject.activeSelf)
+                if (somniumInteraction.optionsObject.transform.GetChild(i).gameObject.activeSelf)
                 {
                     anyActive = true;
                     break;
@@ -457,15 +436,15 @@ public class ObservationProvider
         // If UI is off OR no buttons are active → no interaction
         if (!anyActive)
         {
-            if (!somniumInteractLook) return; // already inactive
-            somniumInteractLook = false;
+            if (!somniumInteraction.interactionActive) return; // already inactive
+            somniumInteraction.interactionActive = false;
             return;
         }
         // Only continue if state changed
-        if (somniumInteractLook == anyActive) return;
-        somniumInteractLook = anyActive;
+        if (somniumInteraction.interactionActive == anyActive) return;
+        somniumInteraction.interactionActive = anyActive;
 
-        SomniumCurrentOptions.Clear();
+        somniumInteraction.currentOptions.Clear();
 
         // Checks if button is and is active
         SomniumAddButtonIfActive("Command1", "button_up");
@@ -473,7 +452,7 @@ public class ObservationProvider
         SomniumAddButtonIfActive("Command2", "button_right");
 
         // emit event
-        OnLookChoicesUpdated?.Invoke(SomniumCurrentOptions);
+        OnLookChoicesUpdated?.Invoke(somniumInteraction.currentOptions);
     }
 
 
@@ -482,27 +461,27 @@ public class ObservationProvider
     private void AddButtonIfActive(string buttonName, string KeyPrefix, string customText="")
     {
         string finalKey = KeyPrefix;
-        var buttonObj = lookChoices.transform.Find(buttonName)?.gameObject; // Find button object
+        var buttonObj = investigationInteraction.optionsObject.transform.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj != null && buttonObj.activeSelf) // Make sure the button exists AND is active
         {
-            var textComp = lookChoices.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>(); // Store the button GameObject
+            var textComp = investigationInteraction.optionsObject.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>(); // Store the button GameObject
             if (moveable.Contains(KeyPrefix))
             {
-                bool activeComp = lookChoices.transform.Find(buttonName + "/Button").gameObject.activeSelf;
+                bool activeComp = investigationInteraction.optionsObject.transform.Find(buttonName + "/Button").gameObject.activeSelf;
                 if (activeComp) finalKey += "_l";
                 else finalKey += "_r";
             }
-            if ( textComp != null) CurrentOptions[finalKey] = TextCleaner.Clean(textComp.text); // Use the button text as action description
-            else CurrentOptions[finalKey] = customText; // Use custom text as action description
+            if ( textComp != null) investigationInteraction.currentOptions[finalKey] = TextCleaner.Clean(textComp.text); // Use the button text as action description
+            else investigationInteraction.currentOptions[finalKey] = customText; // Use custom text as action description
         }
     }
     private void SomniumAddButtonIfActive(string buttonName, string KeyPrefix)
     {
-        var buttonObj = SomniumInteractOptionsObject.transform.Find(buttonName)?.gameObject; // Find button object
+        var buttonObj = somniumInteraction.optionsObject.transform.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj != null && buttonObj.activeSelf) // Make sure the button exists AND is active
         {
-            var textComp = SomniumInteractOptionsObject.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>(); // Store the button GameObject
-            if ( textComp != null) SomniumCurrentOptions[KeyPrefix] = textComp.text; // Use the button text as action description
+            var textComp = somniumInteraction.optionsObject.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>(); // Store the button GameObject
+            if ( textComp != null) somniumInteraction.currentOptions[KeyPrefix] = textComp.text; // Use the button text as action description
         }
     }
     private void SendBannerText(string message, bool isSilent)
