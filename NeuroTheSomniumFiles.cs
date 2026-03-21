@@ -3,6 +3,8 @@ namespace NeuroSomniumFilesController;
 using System.Collections.Generic;
 using WebSocketSharp;
 using System;
+using System.IO;
+using System.Threading;
 using UnityEngine.UI;
 using UnityEngine;
 using BepInEx;
@@ -55,6 +57,7 @@ public class AgentController
         observations.OnTermChange += network.SendString;
         actions.OnUpdateActionList += network.SendString;
         actions.OnResultMessageCreated += network.SendString;
+        observations.OnLookDisable += actions.Unregister;
         
         network.Connect();
         NeuroMessage startUpMsg = new NeuroMessage();
@@ -68,6 +71,7 @@ public class AgentController
         if ( searchTimer > 1f) { searchAllowed = true; searchTimer = 0f; }
         else searchAllowed = false;
         
+        network.Tick();
         observations.Collect(searchAllowed);
     }
 }
@@ -89,12 +93,13 @@ public class ObservationProvider
     {
         public GameObject optionsObject;
         public bool interactionActive;
-        public Dictionary<string, string> currentOptions;
+        public Dictionary<string, string> currentOptions = new Dictionary<string, string>();
         public string focusTerm;
     }
 
     public event Action<string> OnTermChange;
     public event Action<string> OnBannerText;
+    public event Action OnLookDisable;
     public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
 
     // Condition trackers Investigation
@@ -133,7 +138,7 @@ public class ObservationProvider
         SomniumMessageWindow(searchAllowed);
         SomniumNarrationWindow(searchAllowed);
         SomniumEventMessageWindow(searchAllowed);
-        //SomniumFlashBackWindow(searchAllowed);
+        SomniumFlashBackWindow(searchAllowed);
         SomniumEventNarrationWindow(searchAllowed);
         SomniumSubtitleWindow(searchAllowed);
         SomniumLyrics(searchAllowed);
@@ -270,6 +275,7 @@ public class ObservationProvider
         investigationInteraction.currentOptions.Clear();
         if (!lookActive)
         {
+            OnLookDisable?.Invoke();
             investigationInteraction.focusTerm = "";
             return;
         }
@@ -515,6 +521,7 @@ public class ActionRegistry
 
     public void Unregister()
     {
+        if (actions == null) return;
         OnUpdateActionList?.Invoke(ToJsonUnRegister());
         actions.Clear();
     }
@@ -527,11 +534,10 @@ public class ActionRegistry
         string command;
 
         // extract id and action_name
-        JSON jsonHelper = new JSON();
-        command = jsonHelper.ExtractJsonValue(json, "command");
+        command = JSON.ExtractJsonValue(json, "command");
         if (command != "action") return;
-        id = jsonHelper.ExtractJsonValue(json, "id");
-        action_name = jsonHelper.ExtractJsonValue(json, "name");
+        id = JSON.ExtractJsonValue(json, "id");
+        action_name = JSON.ExtractJsonValue(json, "name");
         
         // check valid
         foreach (var key in actions.Keys)
@@ -626,18 +632,88 @@ public class ActionRegistry
 public class NetworkClient
 {
     private WebSocket ws;
+    private float retryTimer = 0f;
+    private float retryDelay = 5f;
+    private bool shouldRetry = false;
     public event Action<string> OnMessageReceived;
+    public string web_url = ConfigLoader.LoadWebSocketURL();
+
+    private Queue<string> sendQueue = new Queue<string>();
+    private float sendTimer = 0f;
+    private float sendDelay = 0.2f;
 
     public void Connect()
     {
-        ws = new WebSocket("ws://localhost:8000");
+        if (ws != null)
+        {
+            try { ws.Close(); }
+            catch {}
+        }
+        ws = new WebSocket($"{web_url}");
 
         ws.OnOpen += OnOpen;
         ws.OnMessage += OnMessage;
         ws.OnError += OnError;
         ws.OnClose += OnClose;
 
-        ws.Connect();
+        try
+        {
+            ws.Connect();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("[WebSocket] Connect exception: " + e.Message);
+            shouldRetry = true;
+            retryTimer = 0f;
+        }
+    }
+
+    public void Tick()
+    {
+        Reconnect();
+        SendQueuedAction();
+    }
+
+    public void SendQueuedAction()
+    {
+        if (ws == null || !ws.IsAlive) return;
+
+        sendTimer += Time.deltaTime;
+
+        if (sendTimer < sendDelay) return;
+        sendTimer = 0f;
+
+        lock (sendQueue)
+        {
+            if (sendQueue.Count > 0)
+            {
+                string msg = sendQueue.Dequeue();
+                try
+                {
+                    ws.Send(msg);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("[WebSocket] Send failed" + e.Message);
+                }
+            }
+        }
+    }
+
+    public void Reconnect()
+    {
+        if (!shouldRetry) return;
+        if (ws != null && ws.IsAlive) return;
+
+        retryTimer += Time.deltaTime;
+
+        if (retryTimer >= retryDelay)
+        {
+            web_url = ConfigLoader.LoadWebSocketURL();
+            Debug.Log("[WebSocket] Retrying connection...");
+            shouldRetry = false;
+            Connect();
+        }
     }
 
     private void OnOpen(object sender, System.EventArgs e)
@@ -647,34 +723,32 @@ public class NetworkClient
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        // try
-        // {
-        //     System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", e.Data + "\n");
-        // }
-        // catch {}
-
         Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
         OnMessageReceived?.Invoke(text);
     }
 
-    private void OnError(object sender, ErrorEventArgs e)
+    private void OnError(object sender, WebSocketSharp.ErrorEventArgs e)
     {
         Debug.Log("[WebSocket] Error: " + e.Message);
+        shouldRetry = true;
+        retryTimer = 0f;
     }
 
     private void OnClose(object sender, CloseEventArgs e)
     {
         Debug.Log("[WebSocket] Closed: " + e.Code);
+        shouldRetry = true;
+        retryTimer = 0f;
     }
 
     public void SendString(string json)
     {
-        if (ws != null && ws.IsAlive)
+        lock ( sendQueue)
         {
-            System.IO.File.AppendAllText("D:\\temp\\ws_log.txt", json + "\n");
-            ws.Send(json);
+            sendQueue.Enqueue(json);
         }
+        //ws.Send(json);
     }
 }
 
@@ -749,9 +823,9 @@ public class ActionExecutor
 
 
 // Helper function
-public class JSON
+public static class JSON
 {
-    public string ExtractJsonValue(string json, string key)
+    public static string ExtractJsonValue(string json, string key)
     {
         string pattern = $"\"{key}\":\"(.*?)\"";
         System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(json, pattern);
@@ -760,6 +834,29 @@ public class JSON
     }
 }
 
+public static class ConfigLoader
+{
+    public static string LoadWebSocketURL()
+    {
+        string path = Path.Combine(Paths.PluginPath, "config_websocket_url.txt");
+
+        if (!File.Exists(path))
+        {
+            Debug.Log("[Config] File not found, using default");
+            return "ws://localhost:8000";
+        }
+
+        string text = File.ReadAllText(path).Trim();
+
+        if (string.IsNullOrEmpty(text))
+        {
+            Debug.Log("[Config] File empty, using default");
+            return "ws://localhost:8000";
+        }
+
+        return text;
+    }
+}
 
 // Resources
 public static class TextCleaner
