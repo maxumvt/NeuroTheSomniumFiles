@@ -521,7 +521,7 @@ public class ActionRegistry
 
     public void Unregister()
     {
-        if (actions == null) return;
+        if (actions.Count == 0) return;
         OnUpdateActionList?.Invoke(ToJsonUnRegister());
         actions.Clear();
     }
