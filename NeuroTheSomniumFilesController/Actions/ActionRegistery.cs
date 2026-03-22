@@ -20,6 +20,7 @@ public class ActionRegistry
     public void Register(Dictionary<string,string> acts)
     {
         actions = new Dictionary<string, string>(acts);
+        Debug.Log($"this is the dictionary for the actions in order: {actions}");
         OnUpdateActionList?.Invoke(ToJsonRegister());
         OnUpdateActionList?.Invoke(ToJsonRegisterForce());
     }
@@ -33,7 +34,6 @@ public class ActionRegistry
 
     public void Validate(string json)
     {
-        Debug.Log($"this is received in ActionRegistery: {json}");
         string id;
         string action_name;
         string command;

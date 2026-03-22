@@ -37,6 +37,6 @@ public class DialogueObserver : BaseObserver
 
         lastLine = dialogueText;
 
-        OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText}");
+        OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} from: {location}");
     }
 }

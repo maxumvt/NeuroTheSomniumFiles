@@ -21,7 +21,7 @@ public class SomniumOptionsObserver : BaseObserver
         {
             if (!allowSearch) return;
 
-            optionsObject = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale");
+            optionsObject = GameObject.Find("$Root/3DUI");
             if (optionsObject == null) return;
         }
 
