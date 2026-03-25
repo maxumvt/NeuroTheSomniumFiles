@@ -40,6 +40,10 @@ public class GameObservers
         som.OnOptionsUpdated += (opts) => OnLookChoicesUpdated?.Invoke(opts);
         som.OnDisable += () => OnLookDisable?.Invoke();
         observers.Add(som);
+
+        var purpose = new PurposeObserver();
+        purpose.OnMissionPurpose += SendBannerText;
+        observers.Add(purpose);
     }
 
     public void Collect(bool searchAllowed)

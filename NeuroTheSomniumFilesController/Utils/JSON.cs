@@ -44,7 +44,6 @@ public static class JSON
 
         var objDict = new Dictionary<string, object>();
 
-        // fields
         foreach (var field in type.GetFields())
         {
             objDict[field.Name] = field.GetValue(obj);
