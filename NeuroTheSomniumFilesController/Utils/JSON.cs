@@ -22,17 +22,17 @@ public static class JSON
         if (obj is bool b)
             return b ? "true" : "false";
 
-        if (obj is IDictionary<string, object> dict)
+        if (obj is System.Collections.IDictionary dict)
         {
             var parts = new List<string>();
-            foreach (var kv in dict)
+            foreach (System.Collections.DictionaryEntry kv in dict)
             {
-                parts.Add($"\"{Escape(kv.Key)}\":{ToJson(kv.Value)}");
+                parts.Add($"\"{Escape(kv.Key.ToString())}\":{ToJson(kv.Value)}");
             }
             return "{" + string.Join(",", parts.ToArray()) + "}";
         }
 
-        if (obj is IList<object> list)
+        if (obj is System.Collections.IEnumerable list && !(obj is string))
         {
             var parts = new List<string>();
             foreach (var item in list)
@@ -40,7 +40,17 @@ public static class JSON
             return "[" + string.Join(",", parts.ToArray()) + "]";
         }
 
-        return obj.ToString();
+        var type = obj.GetType();
+
+        var objDict = new Dictionary<string, object>();
+
+        // fields
+        foreach (var field in type.GetFields())
+        {
+            objDict[field.Name] = field.GetValue(obj);
+        }
+
+        return JSON.ToJson(objDict);
     }
 
     static string Escape(string s)

@@ -3,11 +3,11 @@ namespace NeuroTheSomniumFiles;
 using System.Collections.Generic;
 
 
-public class ActionUnregisterMessage : NeuroMessage
+public class ActionforceMessage : NeuroMessage
 {
-    public ActionUnregisterMessage(List<BaseAction> actions)
+    public ActionforceMessage(List<BaseAction> actions)
     {
-        this.message["command"] = "actions/unregister";
+        this.message["command"] = "actions/force";
 
         List<string> action_names = new List<string>();
         foreach (BaseAction act in actions)
@@ -17,6 +17,10 @@ public class ActionUnregisterMessage : NeuroMessage
 
         this.message["data"] = new Dictionary<string, object>()
         {
+            {"state", ""},
+            {"query", ""},
+            {"ephemeral_context", false},
+            {"priority", "low"},
             {"action_names", action_names },
         };
         

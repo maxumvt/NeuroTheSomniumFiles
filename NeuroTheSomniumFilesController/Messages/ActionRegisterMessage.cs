@@ -7,7 +7,7 @@ public class ActionRegisterMessage : NeuroMessage
 {
     public ActionRegisterMessage(List<BaseAction> actions)
     {
-        this.message["command"] = "action/register";
+        this.message["command"] = "actions/register";
         this.message["data"] = new Dictionary<string, object>()
         {
             {"actions", actions },
