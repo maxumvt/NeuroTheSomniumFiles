@@ -3,7 +3,7 @@ namespace NeuroTheSomniumFiles;
 using System;
 using System.Collections.Generic;
 
-public class GameObserver
+public class GameObservers
 {
     private List<BaseObserver> observers = new List<BaseObserver>();
 
@@ -12,7 +12,7 @@ public class GameObserver
     public event Action OnLookDisable;
     public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
 
-    public GameObserver() //Instantiate the observers
+    public GameObservers() //Instantiate the observers
     {
         // Investigation
         AddDialogue("UICanvas", "MessageWindow");

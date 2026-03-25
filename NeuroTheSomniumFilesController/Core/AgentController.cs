@@ -5,9 +5,9 @@ using UnityEngine;
 public class AgentController
 {
     private NetworkClient network;
-    private GameObserver observations;
+    private GameObservers observations;
     private ActionRegistry actions;
-    public AgentController(NetworkClient net, GameObserver obs, ActionRegistry act)
+    public AgentController(NetworkClient net, GameObservers obs, ActionRegistry act)
     {
         network = net;
         observations = obs;
@@ -20,12 +20,14 @@ public class AgentController
     public void Initialize()
     {
         network.OnMessageReceived += actions.Validate;
+
         observations.OnBannerText += network.SendString;
         observations.OnLookChoicesUpdated += actions.Register;
         observations.OnTermChange += network.SendString;
+        observations.OnLookDisable += actions.Unregister;
+        
         actions.OnUpdateActionList += network.SendString;
         actions.OnResultMessageCreated += network.SendString;
-        observations.OnLookDisable += actions.Unregister;
         
         network.Connect();
         NeuroMessage startUpMsg = new NeuroMessage();

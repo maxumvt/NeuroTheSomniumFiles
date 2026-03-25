@@ -12,7 +12,7 @@ public class MyPlugin : BaseUnityPlugin
         var network = new NetworkClient();
         var actionExecutor = new ActionExecutor();
         var actions = new ActionRegistry(actionExecutor);
-        var observations = new GameObserver();
+        var observations = new GameObservers();
 
         agent = new AgentController(network, observations, actions);
         agent.Initialize();
