@@ -10,10 +10,11 @@ public class SomniumOptionsObserver : BaseObserver
     private GameObject optionsObject;
     private bool interactionActive;
 
-    private Dictionary<string, string> currentOptions = new Dictionary<string, string>();
+    // private Dictionary<string, string> currentOptions = new Dictionary<string, string>();
+    private List<BaseAction> listedOptions = new List<BaseAction>(){};
 
     public event Action OnDisable;
-    public event Action<Dictionary<string, string>> OnOptionsUpdated;
+    public event Action<List<BaseAction>> OnOptionsUpdated;
 
     public override void Collect(bool allowSearch)
     {
@@ -48,12 +49,13 @@ public class SomniumOptionsObserver : BaseObserver
         if (interactionActive == anyActive) return;
         
         interactionActive = anyActive;
-        currentOptions.Clear();
+        // currentOptions.Clear();
+        listedOptions.Clear();
         AddButton("Command1", "button_up");
         AddButton("Command3", "button_left");
         AddButton("Command2", "button_right");
 
-        OnOptionsUpdated?.Invoke(currentOptions);
+        OnOptionsUpdated?.Invoke(listedOptions);
     }
 
     private void AddButton(string name, string key)
@@ -61,8 +63,10 @@ public class SomniumOptionsObserver : BaseObserver
         var obj = optionsObject.transform.Find(name)?.gameObject;
         if (obj == null || !obj.activeSelf) return;
 
-        var text = optionsObject.transform.Find(name + "/Text")?.GetComponent<TextMeshPro>();
-        if (text != null) currentOptions[key] = text.text;
+        string text = optionsObject.transform.Find(name + "/Text")?.GetComponent<TextMeshPro>().text;
+        // if (text != null) currentOptions[key] = text;
+        BaseAction newAction = new BaseAction(name, text);
+        listedOptions.Add(newAction);
     }
     
 }

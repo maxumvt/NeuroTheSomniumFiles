@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 public class ActionRegisterMessage : NeuroMessage
 {
-    public ActionRegisterMessage(List<Dictionary<string,string>> actions)
+    public ActionRegisterMessage(List<BaseAction> actions)
     {
-        this.message["command"] = "action/result";
+        this.message["command"] = "action/register";
         this.message["data"] = new Dictionary<string, object>()
         {
-             {"data", {"actions", null }},
+            {"actions", actions },
         };
         
     }

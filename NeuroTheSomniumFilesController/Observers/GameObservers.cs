@@ -10,7 +10,7 @@ public class GameObservers
     public event Action<string> OnTermChange;
     public event Action<string> OnBannerText;
     public event Action OnLookDisable;
-    public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
+    public event Action<List<BaseAction>> OnLookChoicesUpdated;
 
     public GameObservers() //Instantiate the observers
     {
@@ -67,6 +67,6 @@ public class GameObservers
     {
         message = TextCleaner.Clean(message);
         ContextMessage cMsg = new ContextMessage(message, false);
-        OnBannerText?.Invoke(cMsg.ToJson());
+        OnBannerText?.Invoke(JSON.ToJson(cMsg.message));
     }
 }

@@ -31,7 +31,7 @@ public class AgentController
         
         network.Connect();
         NeuroMessage startUpMsg = new NeuroMessage();
-        network.SendString(startUpMsg.StartupToJson());
+        network.SendString(JSON.ToJson(startUpMsg.message));
 
     }
 
