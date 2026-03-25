@@ -5,21 +5,11 @@ namespace NeuroTheSomniumFiles;
 
 public class NeuroMessage
 {
-    public string command = "startup";
-    public string game = "AI The Somnium Files";
-    public Dictionary<string, string> message = new Dictionary<string, string>()
+    public Dictionary<string, object> message = new Dictionary<string, object>()
     {
         {"command", "startup"},
         {"game","AI The Somnium Files"},
+        {"data", null},
 
     };
-
-    public string StartupToJson()
-    {
-        //message.Concat(message);
-        return "{"
-            + "\"command\":\"" + command + "\","
-            + "\"game\":\"" + game + "\""
-            + "}";
-    }
 }

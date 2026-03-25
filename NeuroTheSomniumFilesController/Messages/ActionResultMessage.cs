@@ -1,25 +1,18 @@
 namespace NeuroTheSomniumFiles;
 
+using System.Collections.Generic;
+
 
 public class ActionResultMessage : NeuroMessage
 {
-    public string id;
-    public bool action_success;
     public ActionResultMessage(string incoming_id, bool incoming_action_success)
     {
-        this.command = "action/result";
-        this.id = incoming_id;
-        this.action_success = incoming_action_success;
-    }
-
-    public string ToJson()
-    {
-        return "{"
-            + $"\"command\":\"{command}\","
-            + "\"data\":{"
-            + $"\"id\":\"{id}\","
-            + $"\"success\":{action_success.ToString().ToLower()}"
-            + "}"
-            + "}";
+        this.message["command"] = "action/result";
+        this.message["data"] = new Dictionary<string, string>()
+        {
+            {"id",$"{incoming_id}"},
+            {"success", $"{incoming_action_success}"},
+            {"message", null},
+        };
     }
 }
