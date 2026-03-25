@@ -14,3 +14,4 @@ D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroTheSomniumFiles.sourcelink
 D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroThe.0F605BFA.Up2Date
 D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroTheSomniumFiles.dll
 D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroTheSomniumFiles.pdb
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\Assembly-CSharp.dll

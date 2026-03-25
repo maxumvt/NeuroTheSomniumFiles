@@ -25,6 +25,11 @@
     <Reference Include="TMPro">
       <HintPath>lib/TMPro.dll</HintPath>
     </Reference>
+
+    <Reference Include="Assembly">
+      <HintPath>lib/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    
   </ItemGroup>
 
 </Project>

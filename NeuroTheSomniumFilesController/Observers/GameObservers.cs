@@ -2,9 +2,11 @@ namespace NeuroTheSomniumFiles;
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GameObservers
 {
+    // Gamecontroller RootResources startScene and startScript
     private List<BaseObserver> observers = new List<BaseObserver>();
 
     public event Action<string> OnTermChange;
@@ -12,8 +14,15 @@ public class GameObservers
     public event Action OnLookDisable;
     public event Action<List<BaseAction>> OnLookChoicesUpdated;
 
+    public SceneObserver sceneObs = new SceneObserver();
+
     public GameObservers() //Instantiate the observers
     {
+        // Game states
+        sceneObs = new SceneObserver();
+        sceneObs.OnContext += SendBannerText;
+        observers.Add(sceneObs);
+
         // Investigation
         AddDialogue("UICanvas", "MessageWindow");
         AddNarration("UICanvas", "NarrationWindow");
@@ -48,8 +57,14 @@ public class GameObservers
 
     public void Collect(bool searchAllowed)
     {
+        string scene = sceneObs.scene ?? "";
+        string sceneLower = scene.ToLower();
+        Debug.Log($"Scene string: {sceneLower}");
+
         foreach (var obs in observers)
         {
+            if (obs is InvestigationOptionsObserver) if (sceneLower.ToLower().Contains("Somnium") == false) continue;
+            if (obs is SomniumOptionsObserver) if (!sceneLower.ToLower().Contains("Somnium") == false) continue;            
             obs.Collect(searchAllowed);
         }
     }
