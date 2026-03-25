@@ -1,26 +1,17 @@
 namespace NeuroTheSomniumFiles;
 
+using System.Collections.Generic;
+
 public class ContextMessage : NeuroMessage
 {
-    public string message;
-    public bool silent;
-
     public ContextMessage(string msg, bool isSilent)
     {
-        this.command = "context";
-        this.message = msg;
-        this.silent = isSilent;
+        this.message["command"] = "context";
+        this.message["data"] = new Dictionary<string, string>()
+        {
+            {"message", msg},
+            {"isSilent", $"{isSilent}"}
+        };
     }
 
-    public string ToJson()
-    {
-        return "{"
-            + "\"command\":\"" + command + "\","
-            + "\"game\":\"" + game + "\","
-            + "\"data\":{"
-            + "\"message\":\"" + message + "\","
-            + "\"silent\":" + (silent ? "true" : "false")
-            + "}"
-            + "}";
-    }
 }

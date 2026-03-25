@@ -10,12 +10,13 @@ public class InvestigationOptionsObserver : BaseObserver
     private GameObject optionsObject;
     private bool interactionActive;
 
-    private Dictionary<string, string> currentOptions = new Dictionary<string, string>();
+    // private Dictionary<string, string> currentOptions = new Dictionary<string, string>();
+    private List<BaseAction> listedOptions = new List<BaseAction>(){};
     private string focusTerm;
 
     public event Action<string> OnTermChange;
     public event Action OnDisable;
-    public event Action<Dictionary<string, string>> OnOptionsUpdated;
+    public event Action<List<BaseAction>> OnOptionsUpdated;
 
     private List<string> moveable = new List<string>()
     {
@@ -38,7 +39,8 @@ public class InvestigationOptionsObserver : BaseObserver
         if (interactionActive == lookActive) return; // no change
 
         interactionActive = lookActive;
-        currentOptions.Clear();
+        listedOptions.Clear();
+        // currentOptions.Clear();
         if (!lookActive)
         {
             OnDisable?.Invoke();
@@ -50,9 +52,11 @@ public class InvestigationOptionsObserver : BaseObserver
         focusTerm = termText ?? "";
 
         ContextMessage msg = new ContextMessage($"Looking at {focusTerm}", false);
-        OnTermChange?.Invoke(msg.ToJson());
+        OnTermChange?.Invoke(JSON.ToJson(msg.message));
 
-        currentOptions["look_at_term"] = $"Look at {focusTerm}";
+        BaseAction newAction = new BaseAction("look_at_term", $"Look at {focusTerm}");
+        listedOptions.Add(newAction);
+        // currentOptions["look_at_term"] = $"Look at {focusTerm}";
 
         AddButton("SelectU", "button_up");
         AddButton("SelectD", "button_down");
@@ -66,9 +70,10 @@ public class InvestigationOptionsObserver : BaseObserver
         AddButton("ZoomXRay", "zoom_xray_button");
         AddButton("ZoomNV", "zoom_night_vision_button");
 
-        if (currentOptions.Count == 0) return;
+        if (listedOptions.Count == 0) return;
 
-        OnOptionsUpdated?.Invoke(currentOptions);
+        // OnOptionsUpdated?.Invoke(currentOptions);
+        OnOptionsUpdated?.Invoke(listedOptions);
     }
 
 
@@ -84,8 +89,10 @@ public class InvestigationOptionsObserver : BaseObserver
             finalKey += leftActive ? "_l" : "_r";
         }
 
-        var textComp = optionsObject.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>(); // Store the button GameObject
-        currentOptions[finalKey] = textComp != null ? TextCleaner.Clean(textComp.text) : customText;
+        string textComp = optionsObject.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>().text; // Store the button GameObject
+        BaseAction newAction = new BaseAction(finalKey, textComp != null ? TextCleaner.Clean(textComp) : customText);
+        listedOptions.Add(newAction);
+        //currentOptions[finalKey] = textComp != null ? TextCleaner.Clean(textComp.text) : customText;
 
     }
 }

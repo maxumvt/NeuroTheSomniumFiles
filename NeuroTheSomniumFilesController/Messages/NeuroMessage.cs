@@ -1,15 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NeuroTheSomniumFiles;
 
 public class NeuroMessage
 {
-    public string command = "startup";
-    public string game = "AI The Somnium Files";
-
-    public string StartupToJson()
+    public Dictionary<string, object> message = new Dictionary<string, object>()
     {
-        return "{"
-            + "\"command\":\"" + command + "\","
-            + "\"game\":\"" + game + "\""
-            + "}";
-    }
+        {"command", "startup"},
+        {"game","AI The Somnium Files"},
+        {"data", null},
+
+    };
 }

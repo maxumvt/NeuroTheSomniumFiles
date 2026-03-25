@@ -3,16 +3,16 @@ namespace NeuroTheSomniumFiles;
 using System;
 using System.Collections.Generic;
 
-public class GameObserver
+public class GameObservers
 {
     private List<BaseObserver> observers = new List<BaseObserver>();
 
     public event Action<string> OnTermChange;
     public event Action<string> OnBannerText;
     public event Action OnLookDisable;
-    public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
+    public event Action<List<BaseAction>> OnLookChoicesUpdated;
 
-    public GameObserver() //Instantiate the observers
+    public GameObservers() //Instantiate the observers
     {
         // Investigation
         AddDialogue("UICanvas", "MessageWindow");
@@ -67,6 +67,6 @@ public class GameObserver
     {
         message = TextCleaner.Clean(message);
         ContextMessage cMsg = new ContextMessage(message, false);
-        OnBannerText?.Invoke(cMsg.ToJson());
+        OnBannerText?.Invoke(JSON.ToJson(cMsg.message));
     }
 }
