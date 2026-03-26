@@ -59,12 +59,18 @@ public class GameObservers
     {
         string scene = sceneObs.scene ?? "";
         string sceneLower = scene.ToLower();
-        Debug.Log($"Scene string: {sceneLower}");
+        
 
         foreach (var obs in observers)
         {
-            if (obs is InvestigationOptionsObserver) if (sceneLower.ToLower().Contains("Somnium") == false) continue;
-            if (obs is SomniumOptionsObserver) if (!sceneLower.ToLower().Contains("Somnium") == false) continue;            
+            if (obs is InvestigationOptionsObserver)
+            {
+                if (sceneLower.ToLower().Contains("somnium") == true) continue;
+            } 
+            if (obs is SomniumOptionsObserver)
+            {
+                if (sceneLower.ToLower().Contains("somnium") == false) continue;
+            } 
             obs.Collect(searchAllowed);
         }
     }
