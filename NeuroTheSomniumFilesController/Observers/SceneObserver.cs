@@ -1,6 +1,5 @@
 namespace NeuroTheSomniumFiles;
 
-using UnityEngine;
 using Game;
 using System;
 
@@ -11,7 +10,7 @@ public class SceneObserver : BaseObserver
 
     public event Action<string> OnContext;
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool _loaded)
     {
         if (RootResources.instance == null) return;
 

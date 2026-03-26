@@ -18,7 +18,7 @@ class PurposeObserver : BaseObserver
         if (purposeRoot) purposeRoot.SetActive(false);
     }
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool loaded) 
     {
         if (allowSearch && purposeRoot == null) purposeRoot = GameObject.Find($"$Root/Canvas (1)/ScreenScaler/Purpose");
 
@@ -32,6 +32,8 @@ class PurposeObserver : BaseObserver
 
         lastPurpose = purpose;
         lastBriefing = briefing;
+
+        if (loaded == false) return;
 
         OnMissionPurpose?.Invoke($"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}"); // Fill in with title, purpose, briefing
 

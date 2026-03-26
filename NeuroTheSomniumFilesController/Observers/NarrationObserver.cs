@@ -21,7 +21,7 @@ public class NarrationObserver : BaseObserver
         this.location = location;
     }
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool loaded) 
     {
         if (allowSearch && message == null)  message = GameObject.Find($"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>();
         if (message == null) return;
@@ -30,6 +30,8 @@ public class NarrationObserver : BaseObserver
         if (string.IsNullOrEmpty(narrationText) || narrationText == lastLine) return;
 
         lastLine = narrationText;
+
+        if (loaded == false) return;
         
         OnNarration?.Invoke($"Narration text: {narrationText}");
 

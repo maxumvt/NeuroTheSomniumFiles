@@ -24,7 +24,7 @@ public class DialogueObserver : BaseObserver
         this.verb = verb;
     }
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool loaded)
     {
         if (allowSearch && namePlate == null) {namePlate = GameObject.Find($"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
         if (allowSearch && dialogue == null) {dialogue = GameObject.Find($"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
@@ -36,6 +36,7 @@ public class DialogueObserver : BaseObserver
         if (string.IsNullOrEmpty(dialogueText) || dialogueText == lastLine) return;
 
         lastLine = dialogueText;
+        if (loaded == false) return;
 
         OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} from: {location}");
         Debug.Log(lastLine);

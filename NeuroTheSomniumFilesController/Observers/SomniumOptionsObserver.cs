@@ -15,7 +15,7 @@ public class SomniumOptionsObserver : BaseObserver
     public event Action OnDisable;
     public event Action<List<BaseAction>> OnOptionsUpdated;
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool loaded)
     {
         if (optionsObject == null)
         {
@@ -52,6 +52,8 @@ public class SomniumOptionsObserver : BaseObserver
         AddButton("Command1", "button_up");
         AddButton("Command3", "button_left");
         AddButton("Command2", "button_right");
+
+        if (loaded == false) return;
 
         OnOptionsUpdated?.Invoke(listedOptions);
     }

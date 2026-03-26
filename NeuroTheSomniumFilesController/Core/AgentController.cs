@@ -14,8 +14,12 @@ public class AgentController
         actions = act;
     }
 
-    private float searchTimer = 0;
+    private float searchTimer = 0f;
     private bool searchAllowed = true;
+
+    private float sceneLoadTimer = 0f;
+    private bool sceneLoading = false;
+    private bool sceneLoaded = false;
 
     public void Initialize()
     {
@@ -26,6 +30,8 @@ public class AgentController
         observations.OnTermChange += network.SendString;
         observations.OnLookDisable += actions.Unregister;
         
+        observations.sceneObs.OnContext += SceneLoading;
+
         actions.OnUpdateActionList += network.SendString;
         actions.OnResultMessageCreated += network.SendString;
         
@@ -40,8 +46,20 @@ public class AgentController
         searchTimer += Time.deltaTime;
         if ( searchTimer > 1f) { searchAllowed = true; searchTimer = 0f; }
         else searchAllowed = false;
+
+        if (sceneLoading)
+        {
+            sceneLoadTimer += Time.deltaTime;
+            if (sceneLoadTimer > 10f) { sceneLoaded = true; sceneLoading = false; sceneLoadTimer = 0f;}
+        }
         
         network.Tick();
-        observations.Collect(searchAllowed);
+        observations.Collect(searchAllowed, sceneLoaded);
+    }
+
+    public void SceneLoading(string empty)
+    {
+        sceneLoading = true;
+        sceneLoaded = false;
     }
 }

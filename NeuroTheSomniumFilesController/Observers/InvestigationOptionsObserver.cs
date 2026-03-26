@@ -25,7 +25,7 @@ public class InvestigationOptionsObserver : BaseObserver
     };
 
 
-    public override void Collect(bool allowSearch)
+    public override void Collect(bool allowSearch, bool loaded)
     {
         if (optionsObject == null)
         {
@@ -51,8 +51,8 @@ public class InvestigationOptionsObserver : BaseObserver
         string termText = optionsObject.transform.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>()?.text;
         focusTerm = termText ?? "";
 
-        ContextMessage msg = new ContextMessage($"Looking at {focusTerm}", false);
-        OnTermChange?.Invoke(JSON.ToJson(msg.message));
+        if (focusTerm == "???" || focusTerm == "aaa") return;
+
 
         BaseAction newAction = new BaseAction("look_at_term", $"Look at {focusTerm}");
         listedOptions.Add(newAction);
@@ -72,7 +72,11 @@ public class InvestigationOptionsObserver : BaseObserver
 
         if (listedOptions.Count == 0) return;
 
-        // OnOptionsUpdated?.Invoke(currentOptions);
+        if (loaded == false) return;
+        
+        ContextMessage msg = new ContextMessage($"Looking at {focusTerm} from investigation", false);
+        OnTermChange?.Invoke(JSON.ToJson(msg.message));
+
         OnOptionsUpdated?.Invoke(listedOptions);
     }
 

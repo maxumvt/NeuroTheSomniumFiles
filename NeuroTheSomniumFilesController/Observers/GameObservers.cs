@@ -55,7 +55,7 @@ public class GameObservers
         observers.Add(purpose);
     }
 
-    public void Collect(bool searchAllowed)
+    public void Collect(bool searchAllowed, bool loaded)
     {
         string scene = sceneObs.scene ?? "";
         string sceneLower = scene.ToLower();
@@ -71,7 +71,7 @@ public class GameObservers
             {
                 if (sceneLower.ToLower().Contains("somnium") == false) continue;
             } 
-            obs.Collect(searchAllowed);
+            obs.Collect(searchAllowed, loaded);
         }
     }
 
