@@ -40,6 +40,7 @@ public class GameObservers
 
         var mentalObs = new MentalLockObserver();
         mentalObs.OnMentalLock += SendBannerText;
+        observers.Add(mentalObs);
 
         var som = new SomniumOptionsObserver();
         som.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
