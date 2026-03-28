@@ -38,6 +38,9 @@ public class GameObservers
         taskObs.OnTask += SendBannerText;
         observers.Add(taskObs);
 
+        var mentalObs = new MentalLockObserver();
+        mentalObs.OnMentalLock += SendBannerText;
+
         var som = new SomniumOptionsObserver();
         som.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
         som.OnDisable += () => OnLookDisable?.Invoke();
@@ -67,6 +70,7 @@ public class GameObservers
         foreach (var obs in observers)
         {
             bool skip = ( obs is InvestigationOptionsObserver && isSomnium ) || ( obs is SomniumOptionsObserver && !isSomnium );
+            
             if ( skip )
                 continue;
             
