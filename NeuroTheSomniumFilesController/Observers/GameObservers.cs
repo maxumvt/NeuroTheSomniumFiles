@@ -19,34 +19,27 @@ public class GameObservers
     public GameObservers() //Instantiate the observers
     {
         // Game states
-        sceneObs = new SceneObserver();
         sceneObs.OnContext += SendBannerText;
         observers.Add(sceneObs);
 
         // Investigation
-        AddDialogue("UICanvas", "MessageWindow");
-        AddNarration("UICanvas", "NarrationWindow");
-        AddDialogue("UICanvas", "EventMessageWindow");
-        AddNarration("UICanvas", "EventNarrationWindow");
-        AddDialogue("UICanvas", "FlashBackWindow", "said");
-        AddDialogue("UICanvas", "SubtitleWindow");
-        AddNarration("UICanvas", "Lyrics");
+        AddStandardUISet("UICanvas");
+
         var inv = new InvestigationOptionsObserver();
-        inv.OnTermChange += (msg) => OnTermChange?.Invoke(msg);
+        inv.OnTermChange += msg => OnTermChange?.Invoke(msg);
         inv.OnDisable += () => OnLookDisable?.Invoke();
-        inv.OnOptionsUpdated += (opts) => OnLookChoicesUpdated?.Invoke(opts);
+        inv.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
         observers.Add(inv);
 
         // Somnium
-        AddDialogue("Canvas (1)", "MessageWindow");
-        AddNarration("Canvas (1)", "NarrationWindow");
-        AddDialogue("Canvas (1)", "EventMessageWindow");
-        AddNarration("Canvas (1)", "EventNarrationWindow");
-        AddDialogue("Canvas (1)", "FlashBackWindow", "said");
-        AddDialogue("Canvas (1)", "SubtitleWindow");
-        AddNarration("Canvas (1)", "Lyrics");
+        AddStandardUISet("Canvas (1)");
+
+        var taskObs = new TaskObserver();
+        taskObs.OnTask += SendBannerText;
+        observers.Add(taskObs);
+
         var som = new SomniumOptionsObserver();
-        som.OnOptionsUpdated += (opts) => OnLookChoicesUpdated?.Invoke(opts);
+        som.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
         som.OnDisable += () => OnLookDisable?.Invoke();
         observers.Add(som);
 
@@ -55,22 +48,28 @@ public class GameObservers
         observers.Add(purpose);
     }
 
+    private void AddStandardUISet(string canvas)
+    {
+        AddDialogue(canvas, "MessageWindow");
+        AddNarration(canvas, "NarrationWindow");
+        AddDialogue(canvas, "EventMessageWindow");
+        AddNarration(canvas, "EventNarrationWindow");
+        AddDialogue(canvas, "FlashBackWindow", "said");
+        AddDialogue(canvas, "SubtitleWindow");
+        AddNarration(canvas, "Lyrics");
+    }
+
     public void Collect(bool searchAllowed, bool loaded)
     {
-        string scene = sceneObs.scene ?? "";
-        string sceneLower = scene.ToLower();
+        string sceneLower = sceneObs.scene?.ToLowerInvariant() ?? "";
+        bool isSomnium = sceneLower.Contains("somnium");
         
-
         foreach (var obs in observers)
         {
-            if (obs is InvestigationOptionsObserver)
-            {
-                if (sceneLower.ToLower().Contains("somnium") == true) continue;
-            } 
-            if (obs is SomniumOptionsObserver)
-            {
-                if (sceneLower.ToLower().Contains("somnium") == false) continue;
-            } 
+            bool skip = ( obs is InvestigationOptionsObserver && isSomnium ) || ( obs is SomniumOptionsObserver && !isSomnium );
+            if ( skip )
+                continue;
+            
             obs.Collect(searchAllowed, loaded);
         }
     }
@@ -81,6 +80,7 @@ public class GameObservers
         obs.OnDialogue += SendBannerText;
         observers.Add(obs);
     }
+ 
     private void AddNarration(string canvas, string location)
     {
         var obs = new NarrationObserver(canvas, location);
@@ -90,8 +90,8 @@ public class GameObservers
 
     private void SendBannerText(string message)
     {
-        message = TextCleaner.Clean(message);
-        ContextMessage cMsg = new ContextMessage(message, false);
+        string cleaned = TextCleaner.Clean(message);
+        ContextMessage cMsg = new ContextMessage(cleaned, false);
         OnBannerText?.Invoke(JSON.ToJson(cMsg.message));
     }
 }

@@ -14,6 +14,8 @@ public class DialogueObserver : BaseObserver
     private string canvas;
     private string location;
     private string verb;
+    private string namePath;
+    private string dialoguePath;
 
     public event Action<string> OnDialogue;
 
@@ -22,23 +24,33 @@ public class DialogueObserver : BaseObserver
         this.canvas = canvas;
         this.location = location;
         this.verb = verb;
+
+        namePath = $"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Name/Text";
+        dialoguePath = $"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Background/Text";
     }
 
     public override void Collect(bool allowSearch, bool loaded)
     {
-        if (allowSearch && namePlate == null) {namePlate = GameObject.Find($"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
-        if (allowSearch && dialogue == null) {dialogue = GameObject.Find($"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        if ( allowSearch && namePlate == null ) { namePlate = FindUIElement<RawImage>( namePath ); } // Necessary for finding the object
+        if ( allowSearch && dialogue == null ) { dialogue = FindUIElement<TextMeshProUGUI>( dialoguePath ); } // Necessary for finding the object
 
-        if (namePlate == null || dialogue == null) return;
+        if ( namePlate == null || dialogue == null )
+            return;
 
         string dialogueText = dialogue.text;
-        string nameText = namePlate.mainTexture.name;
-        if (string.IsNullOrEmpty(dialogueText) || dialogueText == lastLine) return;
+        string nameText = namePlate.mainTexture != null
+            ? namePlate.mainTexture.name
+            : "Error";
+
+        if ( string.IsNullOrEmpty(dialogueText) || dialogueText == lastLine )
+            return;
 
         lastLine = dialogueText;
-        if (loaded == false) return;
 
-        OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} from: {location}");
+        if ( !loaded )
+            return;
+
+        OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} ({location})");
         Debug.Log(lastLine);
     }
 }

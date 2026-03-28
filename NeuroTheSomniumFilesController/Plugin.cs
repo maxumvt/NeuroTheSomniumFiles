@@ -9,10 +9,13 @@ public class MyPlugin : BaseUnityPlugin
 
     void Awake()
     {
+        // Core
         var network = new NetworkClient();
+        var observations = new GameObservers();
+
+        // Controller
         var actionExecutor = new ActionExecutor();
         var actions = new ActionRegistry(actionExecutor);
-        var observations = new GameObservers();
 
         agent = new AgentController(network, observations, actions);
         agent.Initialize();
@@ -20,6 +23,6 @@ public class MyPlugin : BaseUnityPlugin
 
     void Update()
     {
-        agent.Tick();
+        agent?.Tick();
     }
 }
