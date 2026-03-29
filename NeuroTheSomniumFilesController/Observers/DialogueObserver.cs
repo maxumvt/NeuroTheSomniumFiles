@@ -7,50 +7,65 @@ using TMPro;
 
 public class DialogueObserver : BaseObserver
 {
+    private GameObject root;
+
     private RawImage namePlate;
     private TextMeshProUGUI dialogue;
     private string lastLine;
 
-    private string canvas;
     private string location;
     private string verb;
+
     private string namePath;
     private string dialoguePath;
+    private string rootPath;
 
     public event Action<string> OnDialogue;
 
     public DialogueObserver(string canvas, string location, string verb = "says")
     {
-        this.canvas = canvas;
         this.location = location;
         this.verb = verb;
 
-        namePath = $"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Name/Text";
-        dialoguePath = $"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig/Background/Text";
+        rootPath = $"$Root/{canvas}/ScreenScaler/UIOff1/PanelNode/{location}/Rig";
+        namePath = $"Name/Text";
+        dialoguePath = $"Background/Text";
     }
 
-    public override void Collect(bool allowSearch, bool loaded)
+    public override void Collect(bool allowSearch)
     {
-        if ( allowSearch && namePlate == null ) { namePlate = FindUIElement<RawImage>( namePath ); } // Necessary for finding the object
-        if ( allowSearch && dialogue == null ) { dialogue = FindUIElement<TextMeshProUGUI>( dialoguePath ); } // Necessary for finding the object
-
-        if ( namePlate == null || dialogue == null )
+        FindRoot( allowSearch, rootPath, out root );
+        if ( ! root )
             return;
+
+        if ( namePlate == null ) namePlate = FindUIElement<RawImage>( root, namePath );
+        if ( dialogue == null )
+        {
+            dialogue = FindUIElement<TextMeshProUGUI>( root, dialoguePath );
+            if ( dialogue != null ) ResetUI();
+            else return;
+            
+        }
 
         string dialogueText = dialogue.text;
-        string nameText = namePlate.mainTexture != null
-            ? namePlate.mainTexture.name
-            : "Error";
+        string nameText = namePlate.mainTexture != null ? namePlate.mainTexture.name : "Error";
 
-        if ( string.IsNullOrEmpty(dialogueText) || dialogueText == lastLine )
-            return;
-
-        lastLine = dialogueText;
-
-        if ( !loaded )
-            return;
+        if ( dialogueText == lastLine || dialogueText == placeholder ) return;
+        else { lastLine = dialogueText; }
 
         OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} ({location})");
         Debug.Log(lastLine);
     }
+
+
+    public override void ResetUI()
+    {
+        if ( dialogue == null )
+            return;
+        
+        var text_field = dialogue.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+        text_field.SetValue(dialogue, placeholder);
+    }
+    
+
 }

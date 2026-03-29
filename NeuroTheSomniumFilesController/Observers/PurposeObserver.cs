@@ -6,36 +6,68 @@ using System;
 
 class PurposeObserver : BaseObserver
 {
-    GameObject purposeRoot;
-    string lastPurpose;
-    string lastBriefing;
+    private GameObject root;
+
+    private TextMeshProUGUI purposeText;
+    private TextMeshProUGUI titleText;
+    private TextMeshProUGUI briefingText;
+
+    private string lastPurpose;
+    private string lastBriefing;
+
+    private string rootPath;
+    private string purposePath;
+    private string titlePath;
+    private string briefingPath;
 
     public event Action<string> OnMissionPurpose;
 
     public PurposeObserver()
     {
-        if (purposeRoot == null) purposeRoot = GameObject.Find($"$Root/Canvas (1)/ScreenScaler/Purpose");
-        if (purposeRoot) purposeRoot.SetActive(false);
+        rootPath = "$Root/Canvas (1)/ScreenScaler/Purpose";
+        purposePath = "Text";
+        titlePath = "ChapterTitle/Text_title";
+        briefingPath = "Briefing/BriefingText";
     }
 
-    public override void Collect(bool allowSearch, bool loaded) 
+    public override void Collect(bool allowSearch)
     {
-        if (allowSearch && purposeRoot == null) purposeRoot = GameObject.Find($"$Root/Canvas (1)/ScreenScaler/Purpose");
+        FindRoot(allowSearch, rootPath, out root);
+        if (!root || !root.gameObject.activeSelf)
+            return;
 
-        if (purposeRoot == null) return;
-        if (purposeRoot.gameObject.activeSelf == false) return;
+        if (purposeText == null)
+        {
+            purposeText = FindUIElement<TextMeshProUGUI>(root, purposePath);
+            if (purposeText != null) ResetUI();
+            else return;
+        }
 
-        string purpose = purposeRoot.transform.Find("Text")?.GetComponent<TextMeshProUGUI>().text;
-        string title = purposeRoot.transform.Find("ChapterTitle/Text_title")?.GetComponent<TextMeshProUGUI>().text;
-        string briefing = purposeRoot.transform.Find("Briefing/BriefingText")?.GetComponent<TextMeshProUGUI>().text;
-        if (string.IsNullOrEmpty(purpose) || string.IsNullOrEmpty(title) || string.IsNullOrEmpty(briefing) || purpose == lastPurpose || briefing == lastBriefing) return;
+        if (titleText == null) titleText = FindUIElement<TextMeshProUGUI>(root, titlePath);
+        if (briefingText == null) briefingText = FindUIElement<TextMeshProUGUI>(root, briefingPath);
 
+        if (titleText == null || briefingText == null)
+            return;
+
+        string purpose = purposeText.text;
+        string title = titleText.text;
+        string briefing = briefingText.text;
+
+        if (purpose == lastPurpose || briefing == lastBriefing || purpose == placeholder)
+            return;
+        
         lastPurpose = purpose;
         lastBriefing = briefing;
 
-        if (loaded == false) return;
+        OnMissionPurpose?.Invoke($"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}");
+    }
 
-        OnMissionPurpose?.Invoke($"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}"); // Fill in with title, purpose, briefing
+    public override void ResetUI()
+    {
+        if (purposeText == null)
+            return;
 
+        var text_field = purposeText.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
+        text_field.SetValue(purposeText, placeholder);
     }
 }

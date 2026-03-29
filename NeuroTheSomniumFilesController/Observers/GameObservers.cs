@@ -2,7 +2,6 @@ namespace NeuroTheSomniumFiles;
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class GameObservers
 {
@@ -20,6 +19,7 @@ public class GameObservers
     {
         // Game states
         sceneObs.OnContext += SendBannerText;
+        sceneObs.OnContext += UIReset;
         observers.Add(sceneObs);
 
         // Investigation
@@ -67,15 +67,15 @@ public class GameObservers
     {
         string sceneLower = sceneObs.scene?.ToLowerInvariant() ?? "";
         bool isSomnium = sceneLower.Contains("somnium");
-        
+
         foreach (var obs in observers)
         {
             bool skip = ( obs is InvestigationOptionsObserver && isSomnium ) || ( obs is SomniumOptionsObserver && !isSomnium );
-            
+
             if ( skip )
                 continue;
-            
-            obs.Collect(searchAllowed, loaded);
+
+            obs.Collect(searchAllowed);
         }
     }
 
@@ -85,7 +85,7 @@ public class GameObservers
         obs.OnDialogue += SendBannerText;
         observers.Add(obs);
     }
- 
+
     private void AddNarration(string canvas, string location)
     {
         var obs = new NarrationObserver(canvas, location);
@@ -98,5 +98,13 @@ public class GameObservers
         string cleaned = TextCleaner.Clean(message);
         ContextMessage cMsg = new ContextMessage(cleaned, false);
         OnBannerText?.Invoke(JSON.ToJson(cMsg.message));
+    }
+
+    private void UIReset(string _)
+    {
+        foreach (var obs in observers)
+        {
+            obs.ResetUI();
+        }
     }
 }

@@ -16,7 +16,7 @@ public class TimerObserver : BaseObserver
 
     public event Action<string> OnTimerSignicantDifference;
 
-    public override void Collect(bool allowSearch, bool loaded) 
+    public override void Collect(bool allowSearch) 
     {
         if ( allowSearch && timerTime == null ) timerTime = GameObject.Find($"$Root/MiddletCanvas/ScreenScaler/Timer/Background//Text")?.GetComponent<TextMeshProUGUI>();
         if ( timerTime == null )
@@ -24,10 +24,6 @@ public class TimerObserver : BaseObserver
 
         string timerTimeText = timerTime.text;
         if ( string.IsNullOrEmpty(timerTimeText) )
-            return;
-
-
-        if ( loaded == false )
             return;
 
         currentTime = CleanTimerText(timerTimeText);

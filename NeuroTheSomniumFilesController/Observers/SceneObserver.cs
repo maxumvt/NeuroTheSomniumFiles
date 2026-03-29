@@ -10,7 +10,7 @@ public class SceneObserver : BaseObserver
 
     public event Action<string> OnContext;
 
-    public override void Collect(bool allowSearch, bool _loaded)
+    public override void Collect(bool allowSearch)
     {
         if (RootResources.instance == null) return;
 

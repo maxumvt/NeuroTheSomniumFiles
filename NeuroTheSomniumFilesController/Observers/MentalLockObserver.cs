@@ -6,28 +6,50 @@ using TMPro;
 
 public class MentalLockObserver : BaseObserver
 {
+    private GameObject root;
 
     private TextMeshProUGUI mentalLock;
     private string lastLock;
 
+    private string rootPath;
+    private string textPath;
+
     public event Action<string> OnMentalLock;
 
-    public override void Collect(bool allowSearch, bool loaded) 
+    public MentalLockObserver()
     {
-        if ( allowSearch && mentalLock == null )  mentalLock = GameObject.Find($"$Root/MiddletCanvas/ScreenScaler/LockClear/Text")?.GetComponent<TextMeshProUGUI>();
-        if ( mentalLock == null )
+        rootPath = "$Root/MiddletCanvas/ScreenScaler/LockClear";
+        textPath = "Text";
+    }
+
+    public override void Collect(bool allowSearch)
+    {
+        FindRoot(allowSearch, rootPath, out root);
+        if (!root)
             return;
+
+        if (mentalLock == null)
+        {
+            mentalLock = FindUIElement<TextMeshProUGUI>(root, textPath);
+            if (mentalLock != null) ResetUI();
+            else return;
+        }
 
         string mentalLockText = mentalLock.text;
-        if ( string.IsNullOrEmpty(mentalLockText) || mentalLockText == lastLock )
-            return;
 
-        lastLock = mentalLockText;
-
-        if ( loaded == false )
+        if (mentalLockText == lastLock || mentalLockText == placeholder)
             return;
-        
+        else { lastLock = mentalLockText; }
+
         OnMentalLock?.Invoke($"Mental lock cleared: {mentalLockText}");
+    }
 
+    public override void ResetUI()
+    {
+        if (mentalLock == null)
+            return;
+
+        var text_field = mentalLock.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
+        text_field.SetValue(mentalLock, placeholder);
     }
 }

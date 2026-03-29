@@ -7,8 +7,9 @@ using TMPro;
 
 public class InvestigationOptionsObserver : BaseObserver
 {
-    private Transform root;
-    private bool interactionActive;
+    private GameObject root;
+    private TextMeshProUGUI term;
+    private bool interactionLastState;
 
     private List<BaseAction> listedOptions = new();
     private string focusTerm;
@@ -16,6 +17,9 @@ public class InvestigationOptionsObserver : BaseObserver
     public event Action<string> OnTermChange;
     public event Action OnDisable;
     public event Action<List<BaseAction>> OnOptionsUpdated;
+    
+    private string rootPath = "$Root/CommandCanvas/ScreenScaler/Command/Scale";
+    private string termPath = "Term/Background/Text";
 
     private readonly HashSet<string> moveable = new()
     {
@@ -24,39 +28,38 @@ public class InvestigationOptionsObserver : BaseObserver
     };
 
 
-    public override void Collect(bool allowSearch, bool loaded)
+    public override void Collect(bool allowSearch)
     {
-        if ( root == null )
-        {
-            if ( !allowSearch )
-                return;
+        FindRoot(allowSearch, rootPath, out root);
+        if ( !root )
+            return;
 
-            root = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale")?.transform;
-            if ( root == null )
-                return;
+        if ( term == null)
+        {
+            term = FindUIElement<TextMeshProUGUI>( root, termPath );
+            if ( term != null)
+                ResetUI();
         }
 
-        bool lookActive = root.Find("Look").gameObject.activeSelf;
-        if (interactionActive == lookActive)
+        bool lookActive = root.transform.Find("Look").gameObject.activeSelf;
+
+        if (interactionLastState == lookActive)
+            return;
+        if (lookActive == false) 
         {
-            // OnDisable?.Invoke();
+            ResetUI();
+            interactionLastState = false;
+            OnDisable?.Invoke();
             return;
         }
 
-        interactionActive = lookActive;
         listedOptions.Clear();
 
-        string termText = root.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>()?.text;
-        focusTerm = termText ?? "";
+        string termText = term?.text;
+        focusTerm = termText ?? placeholder;
 
-        if (!lookActive || focusTerm == "???" || focusTerm == "aaa" )
-        {
-            OnDisable?.Invoke();
-
-            focusTerm = "";
+        if (focusTerm == placeholder)
             return;
-        }
-
 
         BaseAction newAction = new BaseAction("look_at_term", $"Look at {focusTerm}");
         listedOptions.Add(newAction);
@@ -76,9 +79,6 @@ public class InvestigationOptionsObserver : BaseObserver
         if ( listedOptions.Count == 0 )
             return;
 
-        if ( !loaded )
-            return;
-        
         ContextMessage msg = new ContextMessage($"Looking at {focusTerm} from investigation", false);
         OnTermChange?.Invoke(JSON.ToJson(msg.message));
 
@@ -88,27 +88,42 @@ public class InvestigationOptionsObserver : BaseObserver
 
     private void AddButton(string buttonName, string key, string customText="")
     {
-        var buttonRoot = root.Find(buttonName);
-        if (buttonRoot == null || !buttonRoot.gameObject.activeSelf)
-            return;
-
-        var buttonObj = root.Find(buttonName)?.gameObject; // Find button object
+        var buttonObj = root.transform.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj == null || !buttonObj.activeSelf)
             return;
 
         string finalKey = key;
         if (moveable.Contains(key))
         {
-            var buttonChild = root.Find(buttonName + "/Button");
+            var buttonChild = root.transform.Find(buttonName + "/Button");
             if ( buttonChild == null )
                 return;
             bool leftActive  = buttonChild.gameObject.activeSelf;
             finalKey += leftActive ? "_l" : "_r";
         }
 
-        string textComp = root.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>().text; // Store the button GameObject
+        string textComp = root.transform.Find(buttonName + "/Background/Text")?.GetComponent<TextMeshProUGUI>().text; // Store the button GameObject
+
+        if (textComp == placeholder) return;
+
         BaseAction newAction = new BaseAction(finalKey, textComp != null ? TextCleaner.Clean(textComp) : customText);
         listedOptions.Add(newAction);
 
     }
+
+    public override void ResetUI()
+    {
+        if ( !term )
+            return;
+        
+        interactionLastState = false;
+        focusTerm = placeholder;
+        
+        listedOptions.Clear();
+
+        var text_field = term.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+        text_field.SetValue(term, placeholder);
+    }
+
+
 }
