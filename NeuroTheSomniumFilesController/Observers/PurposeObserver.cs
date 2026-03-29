@@ -64,10 +64,13 @@ class PurposeObserver : BaseObserver
 
     public override void ResetUI()
     {
-        if (purposeText == null)
+        if (purposeText == null || titleText == null || briefingText == null )
             return;
 
-        var text_field = purposeText.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
-        text_field.SetValue(purposeText, placeholder);
+        titleText.text = placeholder;
+        purposeText.text = placeholder;
+        briefingText.text = placeholder;
+        // var text_field = purposeText.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
+        // text_field.SetValue(purposeText, placeholder);
     }
 }

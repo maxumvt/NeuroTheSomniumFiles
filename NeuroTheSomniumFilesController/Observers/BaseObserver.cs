@@ -25,7 +25,4 @@ public class BaseObserver
     {
         return root.transform.Find(path)?.GetComponent<T>();
     }
-
-
-
 }

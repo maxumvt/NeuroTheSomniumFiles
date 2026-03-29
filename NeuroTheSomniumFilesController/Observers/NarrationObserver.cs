@@ -37,7 +37,7 @@ public class NarrationObserver : BaseObserver
 
         string narrationText = message.text;
 
-        if (narrationText == lastLine || narrationText == placeholder)
+        if (narrationText == lastLine || narrationText == placeholder || narrationText == "")
             return;
         else { lastLine = narrationText; }
 
@@ -49,8 +49,6 @@ public class NarrationObserver : BaseObserver
         if (message == null)
             return;
 
-        var text_field = message.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-
-        text_field.SetValue(message, placeholder);
+        message.text = placeholder;
     }
 }

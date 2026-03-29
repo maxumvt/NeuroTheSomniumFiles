@@ -50,7 +50,7 @@ public class DialogueObserver : BaseObserver
         string dialogueText = dialogue.text;
         string nameText = namePlate.mainTexture != null ? namePlate.mainTexture.name : "Error";
 
-        if ( dialogueText == lastLine || dialogueText == placeholder ) return;
+        if ( dialogueText == lastLine || dialogueText == placeholder || dialogueText == "" ) return;
         else { lastLine = dialogueText; }
 
         OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} ({location})");
@@ -63,8 +63,7 @@ public class DialogueObserver : BaseObserver
         if ( dialogue == null )
             return;
         
-        var text_field = dialogue.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-        text_field.SetValue(dialogue, placeholder);
+        dialogue.text = placeholder;
     }
     
 

@@ -36,10 +36,31 @@ public class TimerObserver : BaseObserver
     }
 
     private int CleanTimerText(string timeText)
-    {
-        int time = 1;
-        // regex only the numbers and then add them together in a time way
+{
+    if (string.IsNullOrEmpty(timeText))
+        return 0;
 
-        return time;
+    try
+    {
+        // Remove TMP tags like <scale=...>
+        string cleaned = System.Text.RegularExpressions.Regex.Replace(timeText, "<.*?>", "");
+
+        // The string is now like "36000" — first 3 digits = minutes, last 2 = seconds
+        if (cleaned.Length < 3) 
+            return 0;
+
+        // Split into minutes and seconds
+        string minutesStr = cleaned.Substring(0, cleaned.Length - 2);
+        string secondsStr = cleaned.Substring(cleaned.Length - 2, 2);
+
+        int minutes = int.Parse(minutesStr);
+        int seconds = int.Parse(secondsStr);
+
+        return minutes * 60 + seconds;
     }
+    catch
+    {
+        return 0;
+    }
+}
 }

@@ -37,7 +37,7 @@ public class MentalLockObserver : BaseObserver
 
         string mentalLockText = mentalLock.text;
 
-        if (mentalLockText == lastLock || mentalLockText == placeholder)
+        if (mentalLockText == lastLock || mentalLockText == placeholder || mentalLockText == "")
             return;
         else { lastLock = mentalLockText; }
 
@@ -49,7 +49,6 @@ public class MentalLockObserver : BaseObserver
         if (mentalLock == null)
             return;
 
-        var text_field = mentalLock.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
-        text_field.SetValue(mentalLock, placeholder);
+        mentalLock.text = placeholder;
     }
 }

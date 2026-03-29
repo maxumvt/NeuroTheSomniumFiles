@@ -37,7 +37,7 @@ public class InvestigationOptionsObserver : BaseObserver
         if ( term == null)
         {
             term = FindUIElement<TextMeshProUGUI>( root, termPath );
-            if ( term != null)
+            if ( term != null )
                 ResetUI();
         }
 
@@ -113,7 +113,7 @@ public class InvestigationOptionsObserver : BaseObserver
 
     public override void ResetUI()
     {
-        if ( !term )
+        if ( term == null )
             return;
         
         interactionLastState = false;
@@ -121,8 +121,7 @@ public class InvestigationOptionsObserver : BaseObserver
         
         listedOptions.Clear();
 
-        var text_field = term.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-        text_field.SetValue(term, placeholder);
+        term.text = placeholder;
     }
 
 

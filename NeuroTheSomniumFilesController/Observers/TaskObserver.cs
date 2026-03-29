@@ -46,10 +46,11 @@ public class TaskObserver : BaseObserver
 
     public override void ResetUI()
     {
-        if (task == null)
-            return;
+        // if (task == null)
+        //     return;
 
-        var text_field = task.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
-        text_field.SetValue(task, placeholder);
+        // task.text = placeholder;
+        // var text_field = task.GetType().GetField("text", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public );
+        // text_field.SetValue(task, placeholder);
     }
 }
