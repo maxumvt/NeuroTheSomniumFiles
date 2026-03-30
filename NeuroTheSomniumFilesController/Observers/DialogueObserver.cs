@@ -12,6 +12,7 @@ public class DialogueObserver : BaseObserver
     private RawImage namePlate;
     private TextMeshProUGUI dialogue;
     private string lastLine;
+    private string lastName;
 
     private string location;
     private string verb;
@@ -42,16 +43,26 @@ public class DialogueObserver : BaseObserver
         if ( dialogue == null )
         {
             dialogue = FindUIElement<TextMeshProUGUI>( root, dialoguePath );
-            if ( dialogue != null ) ResetUI();
-            else return;
             
+            if ( dialogue != null ) { Debug.Log($"Dialogue ref: {dialogue?.GetInstanceID()}"); ResetUI(); }
+            else return;
         }
 
         string dialogueText = dialogue.text;
         string nameText = namePlate.mainTexture != null ? namePlate.mainTexture.name : "Error";
 
-        if ( dialogueText == lastLine || dialogueText == placeholder || dialogueText == "" ) return;
-        else { lastLine = dialogueText; }
+        bool isNewText = dialogueText == lastLine;
+        bool isNewName = nameText == lastName;
+
+        lastLine = dialogueText;
+        Debug.Log($"Check dialogue text: {dialogueText}");
+        lastName = nameText;
+
+        if (!isNewText && !isNewName)
+            return;
+
+        if (dialogueText == placeholder || dialogueText == "" )
+            return;
 
         OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} ({location})");
         Debug.Log(lastLine);
@@ -64,6 +75,7 @@ public class DialogueObserver : BaseObserver
             return;
         
         dialogue.text = placeholder;
+        Debug.Log("ResetUI CALLED");
     }
     
 

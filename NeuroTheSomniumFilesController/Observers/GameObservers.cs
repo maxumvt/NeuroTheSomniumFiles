@@ -2,6 +2,7 @@ namespace NeuroTheSomniumFiles;
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GameObservers
 {
@@ -106,5 +107,6 @@ public class GameObservers
         {
             obs.ResetUI();
         }
+        Debug.Log("Reset in GameObservers");
     }
 }
