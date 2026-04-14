@@ -32,8 +32,8 @@ public class AgentController
         network.OnMessageReceived += actions.Validate;
 
         // Observations -> Network
-        observations.OnBannerText += network.SendString;
-        observations.OnTermChange += network.SendString;
+        // observations.OnBannerText += network.SendString;
+        // observations.OnTermChange += network.SendString;
 
         // Observations -> Actions
         observations.OnLookChoicesUpdated += actions.Register;
@@ -43,13 +43,13 @@ public class AgentController
         observations.sceneObs.OnContext += SceneLoading;
 
         // Actions -> Network
-        actions.OnUpdateActionList += network.SendString;
-        actions.OnResultMessageCreated += network.SendString;
+        // actions.OnUpdateActionList += network.SendString;
+        // actions.OnResultMessageCreated += network.SendString;
         
         network.Connect();
 
         NeuroMessage startUpMsg = new NeuroMessage();
-        network.SendString(JSON.ToJson(startUpMsg.message));
+        // network.SendString(JSON.ToJson(startUpMsg.message));
 
     }
 
