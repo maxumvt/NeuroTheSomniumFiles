@@ -51,11 +51,10 @@ public class DialogueObserver : BaseObserver
         string dialogueText = dialogue.text;
         string nameText = namePlate.mainTexture != null ? namePlate.mainTexture.name : "Error";
 
-        bool isNewText = dialogueText == lastLine;
-        bool isNewName = nameText == lastName;
+        bool isNewText = dialogueText != lastLine;
+        bool isNewName = nameText != lastName;
 
         lastLine = dialogueText;
-        Debug.Log($"Check dialogue text: {dialogueText}");
         lastName = nameText;
 
         if (!isNewText && !isNewName)
@@ -63,6 +62,7 @@ public class DialogueObserver : BaseObserver
 
         if (dialogueText == placeholder || dialogueText == "" )
             return;
+        Debug.Log($"Check dialogue text: {dialogueText}");
 
         OnDialogue?.Invoke($"{nameText} {verb}: {dialogueText} ({location})");
         Debug.Log(lastLine);

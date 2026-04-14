@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BaseObserver
 {
-    public const string placeholder = "_NEURO_PLACEHOLDER_";
+    public const string placeholder = "";
 
     public virtual void Collect(bool allowSearch) { }
 
