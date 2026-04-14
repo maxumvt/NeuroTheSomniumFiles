@@ -6,8 +6,19 @@ public class BaseObserver
 {
     public virtual void Collect(bool allowSearch, bool loaded) { }
     
-    public T FindUIElement<T>(string path) where T : Component
+     public void FindRoot(bool allowSearch, string path, out GameObject root)
     {
-        return GameObject.Find(path)?.GetComponent<T>();
+        root = null;
+        if (! allowSearch)
+            return;
+
+        root = GameObject.Find(path);
+        if (! root)
+            return;
+    }
+
+    public T FindUIElement<T>(GameObject root, string path) where T : Component
+    {
+        return root.transform.Find(path)?.GetComponent<T>();
     }
 }
