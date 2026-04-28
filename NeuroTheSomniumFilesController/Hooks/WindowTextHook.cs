@@ -13,6 +13,14 @@ public static class TextController_SetNextLine_Patch
     {
         try
         {
+            Debug.Log(__instance.transform.parent.parent.parent.ToString());
+            Debug.Log(__instance.transform.parent.parent.GetChild(1).ToString());
+            var list = __instance.GetComponents<UnityEngine.Object>();
+            foreach (var item in list)
+            {
+                Debug.Log(item.ToString());
+                
+            }
             string text = __0;
 
             if (string.IsNullOrEmpty(text))
