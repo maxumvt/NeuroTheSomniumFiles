@@ -10,7 +10,7 @@ public class ContextMessage : NeuroMessage
         this.message["data"] = new Dictionary<string, string>()
         {
             {"message", msg},
-            {"isSilent", $"{isSilent}"}
+            {"silent", $"{isSilent}"}
         };
     }
 
