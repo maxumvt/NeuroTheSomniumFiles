@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 
 [HarmonyPatch(typeof(TMP_Text), "set_text")]
-public static class TMP_Text_set_text_Patch
+public static class Purpose_set_text_Patch
 {
     static void Postfix(TMP_Text __instance, string __0)
     {

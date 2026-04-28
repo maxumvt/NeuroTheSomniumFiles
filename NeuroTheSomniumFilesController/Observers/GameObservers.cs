@@ -7,8 +7,6 @@ public class GameObservers
         
     }
 
-
-
     public void Collect()
     {
 

@@ -11,12 +11,11 @@ public class NetworkClient
     private float retryTimer = 0f;
     private float retryDelay = 5f;
     private bool shouldRetry = false;
+
     public event Action<string> OnMessageReceived;
     public string web_url = ConfigLoader.LoadWebSocketURL();
 
     private static Queue<string> sendQueue = new Queue<string>();
-    private float sendTimer = 0f;
-    private float sendDelay = 0.2f;
 
     public void Connect()
     {
@@ -52,12 +51,8 @@ public class NetworkClient
 
     public void SendQueuedAction()
     {
-        if (ws == null || !ws.IsAlive) return;
-
-        sendTimer += Time.deltaTime;
-
-        if (sendTimer < sendDelay) return;
-        sendTimer = 0f;
+        if (ws == null || !ws.IsAlive)
+            return;
 
         lock (sendQueue)
         {
@@ -78,8 +73,10 @@ public class NetworkClient
 
     public void Reconnect()
     {
-        if (!shouldRetry) return;
-        if (ws != null && ws.IsAlive) return;
+        if (!shouldRetry)
+            return;
+        if (ws != null && ws.IsAlive)
+            return;
 
         retryTimer += Time.deltaTime;
 
