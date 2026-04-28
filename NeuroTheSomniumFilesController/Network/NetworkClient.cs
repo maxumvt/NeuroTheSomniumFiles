@@ -120,7 +120,7 @@ public class NetworkClient
 
     public static void SendString(string json)
     {
-        lock ( sendQueue)
+        lock (sendQueue)
         {
             sendQueue.Enqueue(json);
         }

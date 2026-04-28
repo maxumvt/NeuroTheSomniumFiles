@@ -3,63 +3,98 @@ namespace NeuroTheSomniumFiles;
 using HarmonyLib;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [HarmonyPatch(typeof(Game.TextController), "SetNextLine")]
 public static class TextController_SetNextLine_Patch
 {
-    private static string lastLine;
-
     static void Postfix(Game.TextController __instance, string __0)
     {
         try
         {
-            Debug.Log(__instance.transform.parent.parent.parent.ToString());
-            Debug.Log(__instance.transform.parent.parent.GetChild(1).ToString());
-            var list = __instance.GetComponents<UnityEngine.Object>();
-            foreach (var item in list)
-            {
-                Debug.Log(item.ToString());
-                
-            }
-            string text = __0;
-
-            if (string.IsNullOrEmpty(text))
-                return;
-
-            // Prevent duplicates
-            if (text == lastLine)
-                return;
-
-            lastLine = text;
-
-            // You can enhance this later with speaker detection
-            string cleaned = TextCleaner.Clean(text);
-            string formatted = $"Unknown says: {cleaned}";
-            ContextMessage cMSG = new ContextMessage(formatted, false);
-
-            NetworkClient.SendString(JSON.ToJson(cMSG));
+            JudgeLocation(__instance, __0);
         }
         catch (Exception ex)
         {
             Debug.LogError("[DialogueHook] Exception: " + ex);
         }
     }
+
+    static void JudgeLocation(Game.TextController instance, string new_text)
+    {
+        var target = instance.transform.parent.parent.parent.ToString();
+        //Debug.Log(target);
+
+        if (target.Contains("MessageWindow"))
+            DialogueWindow(instance, new_text);
+        if (target.Contains("NarrationWindow"))
+            NarrationWindow(instance, new_text);
+        if (target.Contains("Explanation"))
+            Explanation(instance, new_text);
+        if (target.Contains("Subtitle"))
+            Subtitle(instance, new_text);
+        if (target.Contains("FlashBackWindow"))
+            FlashBackWindow(instance, new_text);
+        if (target.Contains("Lyrics"))
+            Lyrics(instance, new_text);
+    }
+
+    static void DialogueWindow(Game.TextController instance, string new_text)
+    {
+        var speaker_code = instance.transform.parent.parent.GetChild(1).GetChild(0).GetComponent<RawImage>().mainTexture.name;
+        var speaker = TextCleaner.ResolveCharacterNames(speaker_code);
+
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"{speaker} says: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
+    static void NarrationWindow(Game.TextController instance, string new_text)
+    {
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"Narrated: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
+    static void Explanation(Game.TextController instance, string new_text)
+    {
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"Narrated: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
+    static void Subtitle(Game.TextController instance, string new_text)
+    {
+        var speaker_code = instance.transform.parent.parent.GetChild(1).GetChild(0).GetComponent<RawImage>().mainTexture.name;
+        var speaker = TextCleaner.ResolveCharacterNames(speaker_code);
+ 
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"{speaker} says: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
+    static void FlashBackWindow(Game.TextController instance, string new_text)
+    {
+        var speaker_code = instance.transform.parent.parent.GetChild(1).GetChild(0).GetComponent<RawImage>().mainTexture.name;
+        var speaker = TextCleaner.ResolveCharacterNames(speaker_code);
+
+ 
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"{speaker} said: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
+    static void Lyrics(Game.TextController instance, string new_text)
+    {
+        string cleaned = TextCleaner.Clean(new_text);
+        string formatted = $"Narrated: {cleaned}";
+        ContextMessage cMSG = new ContextMessage(formatted, false);
+
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
 }
-// static void Postfix(UnityEngine.UI.RawImage __instance, UnityEngine.Texture __0)
-// {
-//     try {
-//        StringBuilder sb = new StringBuilder();
-//        sb.AppendLine("--------------------");
-//        sb.AppendLine("void UnityEngine.UI.RawImage::set_texture(UnityEngine.Texture value)");
-//        sb.Append("- __instance: ").AppendLine(__instance.ToString());
-//        sb.Append("- Parameter 0 'value': ").AppendLine(__0?.name.ToString() ?? "null");
-//        if (__0?.name.ToString == "")
-//             {
-//                 return;
-//             }
-//        UnityExplorer.ExplorerCore.Log(sb.ToString());
-//     }
-//     catch (System.Exception ex) {
-//         UnityExplorer.ExplorerCore.LogWarning($"Exception in patch of void UnityEngine.UI.RawImage::set_texture(UnityEngine.Texture value):\n{ex}");
-//     }
-// }

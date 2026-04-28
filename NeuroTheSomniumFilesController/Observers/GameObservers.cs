@@ -18,38 +18,38 @@ public class GameObservers
 
     public GameObservers() //Instantiate the observers
     {
-        // Game states
-        sceneObs.OnContext += SendBannerText;
-        observers.Add(sceneObs);
+        // // Game states
+        // sceneObs.OnContext += SendBannerText;
+        // observers.Add(sceneObs);
 
-        // Investigation
-        AddStandardUISet("UICanvas");
+        // // Investigation
+        // AddStandardUISet("UICanvas");
 
-        var inv = new InvestigationOptionsObserver();
-        inv.OnTermChange += msg => OnTermChange?.Invoke(msg);
-        inv.OnDisable += () => OnLookDisable?.Invoke();
-        inv.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
-        observers.Add(inv);
+        // var inv = new InvestigationOptionsObserver();
+        // inv.OnTermChange += msg => OnTermChange?.Invoke(msg);
+        // inv.OnDisable += () => OnLookDisable?.Invoke();
+        // inv.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
+        // observers.Add(inv);
 
-        // Somnium
-        AddStandardUISet("Canvas (1)");
+        // // Somnium
+        // AddStandardUISet("Canvas (1)");
 
-        var taskObs = new TaskObserver();
-        taskObs.OnTask += SendBannerText;
-        observers.Add(taskObs);
+        // var taskObs = new TaskObserver();
+        // taskObs.OnTask += SendBannerText;
+        // observers.Add(taskObs);
 
-        var mentalObs = new MentalLockObserver();
-        mentalObs.OnMentalLock += SendBannerText;
-        observers.Add(mentalObs);
+        // var mentalObs = new MentalLockObserver();
+        // mentalObs.OnMentalLock += SendBannerText;
+        // observers.Add(mentalObs);
 
-        var som = new SomniumOptionsObserver();
-        som.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
-        som.OnDisable += () => OnLookDisable?.Invoke();
-        observers.Add(som);
+        // var som = new SomniumOptionsObserver();
+        // som.OnOptionsUpdated += opts => OnLookChoicesUpdated?.Invoke(opts);
+        // som.OnDisable += () => OnLookDisable?.Invoke();
+        // observers.Add(som);
 
-        var purpose = new PurposeObserver();
-        purpose.OnMissionPurpose += SendBannerText;
-        observers.Add(purpose);
+        // var purpose = new PurposeObserver();
+        // purpose.OnMissionPurpose += SendBannerText;
+        // observers.Add(purpose);
     }
 
     private void AddStandardUISet(string canvas)
