@@ -12,17 +12,15 @@ public class MyPlugin : BaseUnityPlugin
     {
         // Core
         var network = new NetworkClient();
-        var observations = new GameObservers();
 
         // Controller
-        var actionExecutor = new ActionExecutor();
-        var actions = new ActionRegistry(actionExecutor);
+        var actions = new ActionRegistry();
 
         // Apply Harmony patches
         var harmony = new Harmony("neuro.somnium.dialoguehook");
         harmony.PatchAll();
 
-        agent = new AgentController(network, observations, actions);
+        agent = new AgentController(network, actions);
         agent.Initialize();
     }
 

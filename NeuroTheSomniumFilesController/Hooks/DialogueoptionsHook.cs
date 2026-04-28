@@ -16,7 +16,7 @@ public static class GameObject_SetActive_Patch
         "zoom_night_vision_button", "zoom_xray_button"
     };
 
-    static List<BaseAction> previous_options;
+    public static List<BaseAction> previous_options;
 
     static void Postfix(GameObject __instance, bool __0)
     {
@@ -28,7 +28,7 @@ public static class GameObject_SetActive_Patch
             {
                 // Send unregister signal
                 ActionUnregisterMessage aumMSG = new ActionUnregisterMessage(previous_options);
-                NetworkClient.SendString(JSON.ToJson(aumMSG));
+                NetworkClient.SendString(JSON.ToJson(aumMSG.message));
                 return;
             }
 
@@ -65,13 +65,14 @@ public static class GameObject_SetActive_Patch
 
         string formatted = $"Looking at {focusTerm}";
         ContextMessage cMSG = new ContextMessage(formatted, false);
-        NetworkClient.SendString(JSON.ToJson(cMSG));
+        NetworkClient.SendString(JSON.ToJson(cMSG.message));
 
         ActionRegisterMessage armMSG = new ActionRegisterMessage(options);
-        NetworkClient.SendString(JSON.ToJson(armMSG));
+        NetworkClient.SendString(JSON.ToJson(armMSG.message));
         ActionforceMessage afmMSG = new ActionforceMessage(options);
-        NetworkClient.SendString(JSON.ToJson(afmMSG));
+        NetworkClient.SendString(JSON.ToJson(afmMSG.message));
         previous_options = options;
+        
     }
 
     private static List<BaseAction> AddButton(Transform root, List<BaseAction> options, string buttonName, string key, string customText="")

@@ -26,7 +26,7 @@ public static class TMP_Text_set_text_Patch
             string formatted = $"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}";
             ContextMessage cMSG = new ContextMessage(formatted, false);
 
-            NetworkClient.SendString(JSON.ToJson(cMSG));
+            NetworkClient.SendString(JSON.ToJson(cMSG.message));
 
         }
         catch (Exception ex) {
