@@ -46,6 +46,9 @@ public static class Dialogue_SetActive_Patch
 
         var root = instance.transform.parent;
         string focusTerm = root.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>()?.text ?? "";
+
+        if (focusTerm == "aaa")
+            yield break;
         
         options.Add(new BaseAction("look_at_term", $"Look at {focusTerm}"));
         
