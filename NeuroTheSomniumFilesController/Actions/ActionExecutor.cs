@@ -1,6 +1,8 @@
 namespace NeuroTheSomniumFiles;
 
 using UnityEngine;
+using System.Collections;
+using System.Runtime.InteropServices;
 
 public class ActionExecutor
 {
@@ -62,6 +64,12 @@ public class ActionExecutor
 
     private void PressButton(string buttonKey)
     {
+        CoroutineRunner.Run(PressNextFrame(buttonKey));
+    }
+    private static IEnumerator PressNextFrame(string buttonKey)
+    {
+        yield return null; // wait 1 frame
+
         Component inputProc = GameObject.Find("$Root/GameController").GetComponent("InputProc"); // Gets InputProc
         var pad_states = (System.Collections.IDictionary)inputProc.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(inputProc); // Gets buttons with their state
         

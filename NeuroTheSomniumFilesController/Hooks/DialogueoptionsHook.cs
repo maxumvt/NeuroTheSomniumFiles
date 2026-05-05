@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 
 [HarmonyPatch(typeof(GameObject), "SetActive")]
-public static class GameObject_SetActive_Patch
+public static class Dialogue_SetActive_Patch
 {
     private static readonly HashSet<string> moveable = new()
     {
@@ -16,7 +16,7 @@ public static class GameObject_SetActive_Patch
         "zoom_night_vision_button", "zoom_xray_button"
     };
 
-    public static List<BaseAction> previous_options;
+    private static List<BaseAction> previous_options = new();
 
     static void Postfix(GameObject __instance, bool __0)
     {
@@ -24,11 +24,9 @@ public static class GameObject_SetActive_Patch
             if (!(__instance.name=="Look"))
                 return;
             
-            if (!__0)
+            if (!__0 && previous_options.Count != 0)
             {
-                // Send unregister signal
-                ActionUnregisterMessage aumMSG = new ActionUnregisterMessage(previous_options);
-                NetworkClient.SendString(JSON.ToJson(aumMSG.message));
+                ResetOptions();
                 return;
             }
 
@@ -62,6 +60,9 @@ public static class GameObject_SetActive_Patch
         AddButton(root, options, "ZoomThermo", "zoom_thermo_button");
         AddButton(root, options, "ZoomXRay", "zoom_xray_button");
         AddButton(root, options, "ZoomNV", "zoom_night_vision_button");
+
+        if (options.Count > 5)
+            yield break;
 
         string formatted = $"Looking at {focusTerm}";
         ContextMessage cMSG = new ContextMessage(formatted, false);
@@ -99,5 +100,15 @@ public static class GameObject_SetActive_Patch
         BaseAction newAction = new BaseAction(finalKey, textComp != null ? TextCleaner.Clean(textComp) : customText);
         options.Add(newAction);
         return options;
+    }
+
+    public static List<BaseAction> GetPreviousActions() { return previous_options; }
+    public static void ResetOptions()
+    {
+        // Send unregister signal
+        ActionUnregisterMessage aumMSG = new ActionUnregisterMessage(previous_options);
+        NetworkClient.SendString(JSON.ToJson(aumMSG.message));
+        
+        previous_options.Clear();
     }
 }
