@@ -8,29 +8,22 @@ using UnityEngine;
 [HarmonyPatch(typeof(TMP_Text), "set_text")]
 public static class Timer_set_text_Patch
 {
-    static float TimeLeft = 300f;
+    static float LastTimeLeft = 300f;
     static float UpdateInterval = 10f;
 
     static void Postfix(TMP_Text __instance, string __0)
     {
         try {
-            if (!(__instance.transform.parent.parent.name == "Timer"))
+            if (!(__instance.transform.parent.parent.name == "Time"))
                 return;
-            
-            Debug.Log($"This is Timer working");
 
-            // string title = __instance.transform.parent.parent.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text;
-            // string purpose = __instance.transform.parent.parent.GetChild(5).GetComponent<TextMeshProUGUI>().text;
-            // string briefing = __0;
-
-            // title = TextCleaner.Clean(title);
-            // purpose = TextCleaner.Clean(purpose);
-            // briefing = TextCleaner.Clean(briefing);
-
-            // string formatted = $"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}";
-            // ContextMessage cMSG = new ContextMessage(formatted, false);
-
-            // NetworkClient.SendString(JSON.ToJson(cMSG.message));
+            float timeFloat = TextCleaner.TimeConvert(__0);
+            if ( LastTimeLeft - UpdateInterval >= timeFloat )
+            {
+                ContextMessage msg = new ContextMessage($"Time on the clock is: {__0} second(s)", false);
+                NetworkClient.SendString(JSON.ToJson(msg.message));
+                LastTimeLeft = timeFloat;
+            }
 
         }
         catch (Exception ex) {

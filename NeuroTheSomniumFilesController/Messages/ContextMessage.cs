@@ -13,5 +13,11 @@ public class ContextMessage : NeuroMessage
             {"silent", $"{isSilent}"}
         };
     }
+    
+    public static void CreateContentMessage(string msg, bool silent)
+    {
+        ContextMessage cMSG = new ContextMessage(msg, silent);
+        NetworkClient.SendString(JSON.ToJson(cMSG));
+    }
 
 }

@@ -18,7 +18,10 @@ public static class TextCleaner
         {"ui_main_name_c52", "Policeman"},
         {"ui_main_name_c102", "A-set"},
     };
-
+    public static float TimeConvert(string input)
+    {
+        return 300.0f;
+    }
     public static string Clean(string input)
     {
         if (string.IsNullOrEmpty(input)) return input;

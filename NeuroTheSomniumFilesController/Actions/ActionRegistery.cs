@@ -36,7 +36,7 @@ public class ActionRegistry
                 
                 AE.ExecuteAction(action_name); // call execute
 
-                Dialogue_SetActive_Patch.ResetOptions(); // Unregister the investigation options (Necessary because of the game structure)
+                //Dialogue_SetActive_Patch.ResetOptions(); // Unregister the investigation options (Necessary because of the game structure)
                 return;
             }
         }
