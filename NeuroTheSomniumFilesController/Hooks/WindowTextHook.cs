@@ -46,25 +46,20 @@ public static class TextController_SetNextLine_Patch
 
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"{speaker} says: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        
+        ContextMessage.CreateContentMessage(formatted, false);
     }
     static void NarrationWindow(Game.TextController _instance, string new_text)
     {
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"Narrated: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
     }
     static void Explanation(Game.TextController _instance, string new_text)
     {
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"Narrated: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
     }
     static void Subtitle(Game.TextController instance, string new_text)
     {
@@ -73,9 +68,7 @@ public static class TextController_SetNextLine_Patch
  
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"{speaker} says: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
     }
     static void FlashBackWindow(Game.TextController instance, string new_text)
     {
@@ -85,16 +78,12 @@ public static class TextController_SetNextLine_Patch
  
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"{speaker} said: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
     }
     static void Lyrics(Game.TextController _instance, string new_text)
     {
         string cleaned = TextCleaner.Clean(new_text);
         string formatted = $"Narrated: {cleaned}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
     }
 }

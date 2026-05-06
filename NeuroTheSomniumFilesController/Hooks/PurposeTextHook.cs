@@ -21,13 +21,9 @@ public static class Purpose_set_text_Patch
             title = TextCleaner.Clean(title);
             purpose = TextCleaner.Clean(purpose);
             briefing = TextCleaner.Clean(briefing);
-            // Debug.Log($"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}");
 
             string formatted = $"Mission title: {title}, Mission purpose: {purpose}, Mission briefing: {briefing}";
-            ContextMessage cMSG = new ContextMessage(formatted, false);
-
-            NetworkClient.SendString(JSON.ToJson(cMSG.message));
-
+            ContextMessage.CreateContentMessage(formatted, false);
         }
         catch (Exception ex) {
             Debug.LogError("[DialogueHook] Exception: " + ex);

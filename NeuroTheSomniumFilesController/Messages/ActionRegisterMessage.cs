@@ -12,6 +12,10 @@ public class ActionRegisterMessage : NeuroMessage
         {
             {"actions", actions },
         };
-        
+    }
+    public static void CreateRegisterMessage(List<BaseAction> actions)
+    {
+        ActionRegisterMessage cMSG = new ActionRegisterMessage(actions);
+        NetworkClient.SendString(JSON.ToJson(cMSG.message));
     }
 }

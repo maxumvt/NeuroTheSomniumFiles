@@ -62,11 +62,9 @@ public static class SomniumDialogue_SetActive_Patch
             processing = false;
             yield break;
         }
-   
-        ActionRegisterMessage armMSG = new ActionRegisterMessage(options);
-        NetworkClient.SendString(JSON.ToJson(armMSG.message));
-        ActionforceMessage afmMSG = new ActionforceMessage(options);
-        NetworkClient.SendString(JSON.ToJson(afmMSG.message));
+
+        ActionRegisterMessage.CreateRegisterMessage(options);
+        ActionforceMessage.CreateForceMessage(options);
         previous_options = options;
     }
 
@@ -86,8 +84,7 @@ public static class SomniumDialogue_SetActive_Patch
     public static void ResetOptions()
     {
         // Send unregister signal
-        ActionUnregisterMessage aumMSG = new ActionUnregisterMessage(previous_options);
-        NetworkClient.SendString(JSON.ToJson(aumMSG.message));
+        ActionUnregisterMessage.CreateUnregisterMessage(previous_options);
         processing = false;
         previous_options.Clear();
     }

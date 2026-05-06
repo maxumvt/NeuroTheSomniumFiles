@@ -21,8 +21,7 @@ public static class TaskObserver_set_text_Patch
                 current_task = __0;
                 
                 string cleaned_task = TextCleaner.Clean(__0);
-                ContextMessage msg = new ContextMessage($"The current task is: \"{cleaned_task}\"", false);
-                NetworkClient.SendString(JSON.ToJson(msg.message));
+                ContextMessage.CreateContentMessage($"The current task is: \"{cleaned_task}\"", false);
             }
         }
         catch (Exception ex) {

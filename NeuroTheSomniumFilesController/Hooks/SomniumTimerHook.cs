@@ -20,8 +20,7 @@ public static class Timer_set_text_Patch
             float timeFloat = TextCleaner.TimeConvert(__0);
             if ( LastTimeLeft - UpdateInterval >= timeFloat )
             {
-                ContextMessage msg = new ContextMessage($"Time on the clock is: {__0} second(s)", false);
-                NetworkClient.SendString(JSON.ToJson(msg.message));
+                ContextMessage.CreateContentMessage($"Time on the clock is: {__0} second(s)", false);
                 LastTimeLeft = timeFloat;
             }
 

@@ -47,7 +47,7 @@ public static class Dialogue_SetActive_Patch
         var root = instance.transform.parent;
         string focusTerm = root.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>()?.text ?? "";
 
-        if (focusTerm == "aaa")
+        if (focusTerm == "aaa" || focusTerm == "???")
             yield break;
         
         options.Add(new BaseAction("look_at_term", $"Look at {focusTerm}"));
@@ -68,13 +68,10 @@ public static class Dialogue_SetActive_Patch
             yield break;
 
         string formatted = $"Looking at {focusTerm}";
-        ContextMessage cMSG = new ContextMessage(formatted, false);
-        NetworkClient.SendString(JSON.ToJson(cMSG.message));
+        ContextMessage.CreateContentMessage(formatted, false);
 
-        ActionRegisterMessage armMSG = new ActionRegisterMessage(options);
-        NetworkClient.SendString(JSON.ToJson(armMSG.message));
-        ActionforceMessage afmMSG = new ActionforceMessage(options);
-        NetworkClient.SendString(JSON.ToJson(afmMSG.message));
+        ActionRegisterMessage.CreateRegisterMessage(options);
+        ActionforceMessage.CreateForceMessage(options);
         previous_options = options;
         
     }
@@ -109,9 +106,7 @@ public static class Dialogue_SetActive_Patch
     public static void ResetOptions()
     {
         // Send unregister signal
-        ActionUnregisterMessage aumMSG = new ActionUnregisterMessage(previous_options);
-        NetworkClient.SendString(JSON.ToJson(aumMSG.message));
-        
+        ActionUnregisterMessage.CreateUnregisterMessage(previous_options);
         previous_options.Clear();
     }
 }
