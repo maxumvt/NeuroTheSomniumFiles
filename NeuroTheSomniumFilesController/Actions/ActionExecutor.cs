@@ -1,6 +1,7 @@
 namespace NeuroTheSomniumFiles;
 
 using UnityEngine;
+using System.Collections;
 
 public class ActionExecutor
 {
@@ -62,11 +63,19 @@ public class ActionExecutor
 
     private void PressButton(string buttonKey)
     {
+        CoroutineRunner.Run(PressNextFrame(buttonKey));
+    }
+    private static IEnumerator PressNextFrame(string buttonKey)
+    {
+        yield return null;
+
         Component inputProc = GameObject.Find("$Root/GameController").GetComponent("InputProc"); // Gets InputProc
         var pad_states = (System.Collections.IDictionary)inputProc.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(inputProc); // Gets buttons with their state
-        
+
         var button_obj = pad_states[buttonKey]; // Retrieve the current key's state
         var button_obj_down = button_obj.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public); // Get the "down" field of the key's state
         button_obj_down.SetValue(button_obj, true); // Set the "down" state of the button to true
+        
+
     }
 }

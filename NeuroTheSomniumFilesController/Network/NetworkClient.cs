@@ -7,16 +7,15 @@ using UnityEngine;
 
 public class NetworkClient
 {
-    private WebSocket ws;
+    public static WebSocket ws;
     private float retryTimer = 0f;
     private float retryDelay = 5f;
     private bool shouldRetry = false;
+
     public event Action<string> OnMessageReceived;
     public string web_url = ConfigLoader.LoadWebSocketURL();
 
-    private Queue<string> sendQueue = new Queue<string>();
-    private float sendTimer = 0f;
-    private float sendDelay = 0.2f;
+    private static Queue<string> sendQueue = new Queue<string>();
 
     public void Connect()
     {
@@ -52,12 +51,8 @@ public class NetworkClient
 
     public void SendQueuedAction()
     {
-        if (ws == null || !ws.IsAlive) return;
-
-        sendTimer += Time.deltaTime;
-
-        if (sendTimer < sendDelay) return;
-        sendTimer = 0f;
+        if (ws == null || !ws.IsAlive)
+            return;
 
         lock (sendQueue)
         {
@@ -78,8 +73,10 @@ public class NetworkClient
 
     public void Reconnect()
     {
-        if (!shouldRetry) return;
-        if (ws != null && ws.IsAlive) return;
+        if (!shouldRetry)
+            return;
+        if (ws != null && ws.IsAlive)
+            return;
 
         retryTimer += Time.deltaTime;
 
@@ -92,7 +89,7 @@ public class NetworkClient
         }
     }
 
-    private void OnOpen(object sender, System.EventArgs e)
+    private void OnOpen(object sender, EventArgs e)
     {
         Debug.Log("[WebSocket] Connected");
     }
@@ -104,7 +101,7 @@ public class NetworkClient
         OnMessageReceived?.Invoke(text);
     }
 
-    private void OnError(object sender, WebSocketSharp.ErrorEventArgs e)
+    private void OnError(object sender, ErrorEventArgs e)
     {
         Debug.Log("[WebSocket] Error: " + e.Message);
         shouldRetry = true;
@@ -118,9 +115,9 @@ public class NetworkClient
         retryTimer = 0f;
     }
 
-    public void SendString(string json)
+    public static void SendString(string json)
     {
-        lock ( sendQueue)
+        lock (sendQueue)
         {
             sendQueue.Enqueue(json);
         }

@@ -1,6 +1,7 @@
 namespace NeuroTheSomniumFiles;
 
 using BepInEx;
+using HarmonyLib;
 
 [BepInPlugin("com.maxum.dialoglogger", "NeuroTheSomniumFiles", "1.0.0")]
 public class MyPlugin : BaseUnityPlugin
@@ -11,13 +12,15 @@ public class MyPlugin : BaseUnityPlugin
     {
         // Core
         var network = new NetworkClient();
-        var observations = new GameObservers();
 
         // Controller
-        var actionExecutor = new ActionExecutor();
-        var actions = new ActionRegistry(actionExecutor);
+        var actions = new ActionRegistry();
 
-        agent = new AgentController(network, observations, actions);
+        // Apply Harmony patches
+        var harmony = new Harmony("neuro.somnium.dialoguehook");
+        harmony.PatchAll();
+
+        agent = new AgentController(network, actions);
         agent.Initialize();
     }
 

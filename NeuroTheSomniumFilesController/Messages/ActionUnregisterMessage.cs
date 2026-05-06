@@ -21,4 +21,9 @@ public class ActionUnregisterMessage : NeuroMessage
         };
         
     }
+    public static void CreateUnregisterMessage(List<BaseAction> actions)
+    {
+        ActionUnregisterMessage msg = new ActionUnregisterMessage(actions);
+        NetworkClient.SendString(JSON.ToJson(msg.message));
+    }
 }

@@ -29,6 +29,10 @@
     <Reference Include="Assembly">
       <HintPath>lib/Assembly-CSharp.dll</HintPath>
     </Reference>
+
+    <Reference Include="HarmonyLib">
+      <HintPath>lib/0Harmony.dll</HintPath>
+    </Reference>
     
   </ItemGroup>
 

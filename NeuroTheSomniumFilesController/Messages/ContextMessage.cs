@@ -10,8 +10,14 @@ public class ContextMessage : NeuroMessage
         this.message["data"] = new Dictionary<string, string>()
         {
             {"message", msg},
-            {"isSilent", $"{isSilent}"}
+            {"silent", $"{isSilent}"}
         };
+    }
+    
+    public static void CreateContentMessage(string msg, bool silent)
+    {
+        ContextMessage cMSG = new ContextMessage(msg, silent);
+        NetworkClient.SendString(JSON.ToJson(cMSG.message));
     }
 
 }
