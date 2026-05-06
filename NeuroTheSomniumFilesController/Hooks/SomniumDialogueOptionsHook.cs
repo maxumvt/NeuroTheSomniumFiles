@@ -75,7 +75,7 @@ public static class SomniumDialogue_SetActive_Patch
             return options;
         
         string text = root.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>().text;
-        BaseAction newAction = new BaseAction(key, text);
+        BaseAction newAction = new BaseAction(key, TextCleaner.Clean(text));
         options.Add(newAction);
         return options;
     }

@@ -1,6 +1,8 @@
 namespace NeuroTheSomniumFiles;
 
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using HarmonyLib;
 
 public static class TextCleaner
 {
@@ -20,7 +22,10 @@ public static class TextCleaner
     };
     public static float TimeConvert(string input)
     {
-        return 300.0f;
+        string final_time = "";
+        string[] elements = input.Split('>');
+        final_time += elements[1] + "." + elements[4];
+        return float.Parse(final_time);
     }
     public static string Clean(string input)
     {
@@ -42,7 +47,7 @@ public static class TextCleaner
     }
     public static string RemoveRichText(string text)
     {
-        return System.Text.RegularExpressions.Regex.Replace(text, "<[^>]+>", string.Empty);
+        return Regex.Replace(text, "<.*?>", "");
     }
     public static string ResolveCharacterNames(string text)
     {
