@@ -1,8 +1,8 @@
 namespace NeuroTheSomniumFiles;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using HarmonyLib;
 
 public static class TextCleaner
 {
@@ -23,8 +23,9 @@ public static class TextCleaner
     public static float TimeConvert(string input)
     {
         string final_time = "";
-        string[] elements = input.Split('>');
-        final_time += elements[1] + "." + elements[4];
+        string pattern = "<.*?>";
+        string[] time_elements = Regex.Split(input, pattern);
+        final_time += time_elements.Length > 1 ? time_elements[0] + "." + time_elements[1] : time_elements[0];
         return float.Parse(final_time);
     }
     public static string Clean(string input)
