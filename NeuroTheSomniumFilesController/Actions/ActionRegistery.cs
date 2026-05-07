@@ -46,7 +46,7 @@ public class ActionRegistry
                 ActionResultMessage ARMs = new ActionResultMessage(id, true);
                 NetworkClient.SendString(JSON.ToJson(ARMs.message)); // send success
                 
-                //AE.ExecuteAction(action_name); // call execute
+                AE.ExecuteAction(action_name); // call execute
 
                 SomniumDialogue_SetActive_Patch.ResetOptions(); // Unregister the somnium options (Necessary because of the game structure)
                 return;

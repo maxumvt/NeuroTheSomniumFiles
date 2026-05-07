@@ -103,13 +103,18 @@ public class ActionExecutor
         CoroutineRunner.Run(PressOnDelay(buttonKey, position));
     }
     
-    private static IEnumerator PressOnDelay(string buttonKey, int position)
+    private IEnumerator PressOnDelay(string buttonKey, int position)
     {
-        // take the position into account before pressing the button
         // navigate to position
-        // select position
+        position += 1;
+        for (int i = 0; i < position; i++)
+        {
+            PressButton("R1");
+        }
         // select button
-        yield return null;
+        PressButton("Submit");
+
+        yield return new WaitForSeconds(1.5f);
         Component inputProc = GameObject.Find("$Root/GameController").GetComponent("InputProc"); // Gets InputProc
         var pad_states = (System.Collections.IDictionary)inputProc.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(inputProc); // Gets buttons with their state
 
