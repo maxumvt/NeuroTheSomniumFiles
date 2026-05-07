@@ -9,14 +9,41 @@ public class ActionExecutor
     {
         switch (action_name)
         {
+            case "button_up_0":
+                PressTimieSequence("BUTTON_WASD_DPAD_UP", 0);
+                break;
+            case "button_up_1":
+                PressTimieSequence("BUTTON_WASD_DPAD_UP", 1);
+                break;
+            case "button_up_2":
+                PressTimieSequence("BUTTON_WASD_DPAD_UP", 2);
+                break;
             case "button_up":
                 PressButton("BUTTON_WASD_DPAD_UP");
                 break;
             case "button_down":
                 PressButton("BUTTON_WASD_DPAD_DOWN");
                 break;
+            case "button_left_0":
+                PressTimieSequence("BUTTON_WASD_DPAD_LEFT", 0);
+                break;
+            case "button_left_1":
+                PressTimieSequence("BUTTON_WASD_DPAD_LEFT", 1);
+                break;
+            case "button_left_2":
+                PressTimieSequence("BUTTON_WASD_DPAD_LEFT", 2);
+                break;
             case "button_left":
                 PressButton("BUTTON_WASD_DPAD_LEFT");
+                break;
+            case "button_right_0":
+                PressTimieSequence("BUTTON_WASD_DPAD_RIGHT", 0);
+                break;
+            case "button_right_1":
+                PressTimieSequence("BUTTON_WASD_DPAD_RIGHT", 1);
+                break;
+            case "button_right_2":
+                PressTimieSequence("BUTTON_WASD_DPAD_RIGHT", 2);
                 break;
             case "button_right":
                 PressButton("BUTTON_WASD_DPAD_RIGHT");
@@ -63,19 +90,31 @@ public class ActionExecutor
 
     private void PressButton(string buttonKey)
     {
-        CoroutineRunner.Run(PressNextFrame(buttonKey));
-    }
-    private static IEnumerator PressNextFrame(string buttonKey)
-    {
-        yield return null;
-
         Component inputProc = GameObject.Find("$Root/GameController").GetComponent("InputProc"); // Gets InputProc
         var pad_states = (System.Collections.IDictionary)inputProc.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(inputProc); // Gets buttons with their state
 
         var button_obj = pad_states[buttonKey]; // Retrieve the current key's state
         var button_obj_down = button_obj.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public); // Get the "down" field of the key's state
         button_obj_down.SetValue(button_obj, true); // Set the "down" state of the button to true
-        
+    }
 
+    private void PressTimieSequence(string buttonKey, int position)
+    {
+        CoroutineRunner.Run(PressOnDelay(buttonKey, position));
+    }
+    
+    private static IEnumerator PressOnDelay(string buttonKey, int position)
+    {
+        // take the position into account before pressing the button
+        // navigate to position
+        // select position
+        // select button
+        yield return null;
+        Component inputProc = GameObject.Find("$Root/GameController").GetComponent("InputProc"); // Gets InputProc
+        var pad_states = (System.Collections.IDictionary)inputProc.GetType().GetField("padstates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(inputProc); // Gets buttons with their state
+
+        var button_obj = pad_states[buttonKey]; // Retrieve the current key's state
+        var button_obj_down = button_obj.GetType().GetField("down", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public); // Get the "down" field of the key's state
+        button_obj_down.SetValue(button_obj, true); // Set the "down" state of the button to true
     }
 }

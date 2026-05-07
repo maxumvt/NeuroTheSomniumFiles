@@ -53,9 +53,24 @@ public static class SomniumDialogue_SetActive_Patch
 
         var root = instance.transform.parent; // This is "3DUI"
 
+        GameObject timiesContainer = GameObject.Find($"$Root/MiddletCanvas/ScreenScaler/ItemWindow/Mask/Contents");
+        int timies = timiesContainer.transform.childCount;
+        for (var i = 0; i < timies; i++)
+        {
+            // get timie things
+            string timieValue = timiesContainer.transform.GetChild(i).GetChild(2).GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text; // timies - 1 - 
+            string timiePosition = (timies - i - 1).ToString();
+
+            // add timie value to AddButton *3
+            AddButtonWithTimie(root, options, "Command1", "button_up", timiePosition, timieValue);
+            AddButtonWithTimie(root, options, "Command2", "button_right", timiePosition, timieValue);
+            AddButtonWithTimie(root, options, "Command3", "button_left", timiePosition, timieValue);
+
+        }
+        // These ones will be in a loop for every time item that there is.
         AddButton(root, options, "Command1", "button_up");
-        AddButton(root, options, "Command2", "button_left");
-        AddButton(root, options, "Command3", "button_right");
+        AddButton(root, options, "Command2", "button_right");
+        AddButton(root, options, "Command3", "button_left");
 
         if (options.Count == 0)
         {
@@ -68,14 +83,39 @@ public static class SomniumDialogue_SetActive_Patch
         previous_options = options;
     }
 
-    private static List<BaseAction> AddButton(Transform root, List<BaseAction> options, string buttonName, string key, string customText="")
+    private static List<BaseAction> AddButton(Transform root, List<BaseAction> options, string buttonName, string key)
     {
         var buttonObj = root.Find(buttonName)?.gameObject; // Find button object
         if (buttonObj == null || !buttonObj.activeSelf)
             return options;
         
+        string costText = root.transform.Find(buttonName + "/TimeIcon/Time/TimeText")?.GetComponent<TextMeshPro>().text;
+        string itemText = root.transform.Find(buttonName + "/ItemIcon/Base/ItemText")?.GetComponent<TextMeshPro>().text;
         string text = root.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>().text;
-        BaseAction newAction = new BaseAction(key, TextCleaner.Clean(text));
+
+        itemText = itemText == "Item" ? "None" : itemText;
+        costText = costText == "00" ? "None" : costText;
+
+        string final_text = $"Action: {text}, Time cost: {costText} seconds, Timie gain: {itemText}, Timie use: None";
+
+        BaseAction newAction = new BaseAction(key, TextCleaner.Clean(final_text));
+        options.Add(newAction);
+        return options;
+    }
+    private static List<BaseAction> AddButtonWithTimie(Transform root, List<BaseAction> options, string buttonName, string key, string timiePosition, string timieValue)
+    {
+        var buttonObj = root.Find(buttonName)?.gameObject; // Find button object
+        if (buttonObj == null || !buttonObj.activeSelf)
+            return options;
+        
+        string costText = root.transform.Find(buttonName + "/TimeIcon/Time/TimeText")?.GetComponent<TextMeshPro>().text;
+        string itemText = root.transform.Find(buttonName + "/ItemIcon/Base/ItemText")?.GetComponent<TextMeshPro>().text;
+        string text = root.transform.Find(buttonName + "/Text")?.GetComponent<TextMeshPro>().text;
+
+        string final_text = $"Action: {text}, Time cost: {costText}, Timie gain: {itemText}, Timie use: {timieValue}";
+        string final_key = key + "_" + timiePosition;
+
+        BaseAction newAction = new BaseAction(final_key, TextCleaner.Clean(final_text));
         options.Add(newAction);
         return options;
     }
