@@ -35,8 +35,6 @@ public class ActionRegistry
                 NetworkClient.SendString(JSON.ToJson(ARMs.message)); // send success
                 
                 AE.ExecuteAction(action_name); // call execute
-
-                //Dialogue_SetActive_Patch.ResetOptions(); // Unregister the investigation options (Necessary because of the game structure)
                 return;
             }
         }

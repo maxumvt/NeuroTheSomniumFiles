@@ -14,13 +14,13 @@ public static class Timer_set_text_Patch
     static void Postfix(TMP_Text __instance, string __0)
     {
         try {
-            if (!(__instance.name == "Time"))
+            if (!(__instance.name == "Time" && __instance.transform.parent.parent.name == "Timer"))
                 return;
 
             float timeFloat = TextCleaner.TimeConvert(__0);
-            if ( LastTimeLeft - UpdateInterval >= timeFloat )
+            if ( LastTimeLeft - UpdateInterval >= timeFloat && LastTimeLeft >= 0f)
             {
-                ContextMessage.CreateContentMessage($"Time on the clock is: {timeFloat} second(s)", false);
+                ContextMessage.CreateContentMessage($"Time remaining: {timeFloat} second(s)", false);
                 LastTimeLeft = timeFloat;
             }
 
